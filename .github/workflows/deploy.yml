@@ -53,6 +53,7 @@ jobs:
         # Exclude node_modules so the CloudLinux selector's symlink is preserved.
         run: |
           rsync -az --delete \
+            --rsync-path="/usr/bin/rsync" \
             --exclude='.git' \
             --exclude='.github' \
             --exclude='node_modules' \
