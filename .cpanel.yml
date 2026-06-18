@@ -1,0 +1,18 @@
+---
+# cPanel Git Version Control deployment.
+# Runs on "Deploy HEAD Commit": activates this app's Node virtualenv,
+# installs deps, builds Next.js, then gracefully restarts Passenger.
+#
+# Written to be portable — $HOME avoids hardcoding the username and the
+# version glob (*/bin/activate) avoids hardcoding the Node major version.
+# It assumes the Node.js app has already been created in cPanel with an
+# application root of repos/serverizz/website (which creates the venv below).
+deployment:
+  tasks:
+    - >-
+      source $HOME/nodevenv/repos/serverizz/website/*/bin/activate &&
+      cd $HOME/repos/serverizz/website &&
+      npm ci &&
+      npm run build &&
+      mkdir -p tmp &&
+      touch tmp/restart.txt

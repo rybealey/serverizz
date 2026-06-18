@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Passenger/cPanel startup file — a CommonJS Node entry point run directly
+    // by the host (not bundled), so the TS/ESM lint rules don't apply.
+    "app.js",
   ]),
 ]);
 
