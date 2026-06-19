@@ -75,3 +75,48 @@ export async function getTldPricing(tlds: readonly string[] = TLDS): Promise<Tld
     })
   );
 }
+
+export function buildLoginUrl(): string {
+  return `${CE_URL}/index.php?fuse=admin&action=Login`;
+}
+
+// NOTE: verify-against-live-instance — confirm these paths on account.serverizz.com.
+export function buildForgotPasswordUrl(): string {
+  return `${CE_URL}/index.php?fuse=clients&action=forgotpassword`;
+}
+
+export function buildSignupUrl(): string {
+  return `${CE_URL}/order.php`;
+}
+
+/**
+ * Decide whether a ClientExec login POST succeeded, from the (redirect:"manual")
+ * response. Heuristic — isolated here so it's trivial to adjust after testing
+ * against the live instance:
+ *   - a 3xx redirect that does NOT go back to the login screen → success
+ *   - a 200 (login form re-rendered) or a redirect back to ?action=Login → failure
+ */
+export function isLoginSuccess(status: number, location: string | null): boolean {
+  const isRedirect = status >= 300 && status < 400;
+  if (!isRedirect) return false;
+  const loc = (location ?? "").toLowerCase();
+  if (!loc || loc.includes("action=login")) return false;
+  return true;
+}
+
+/** Validate credentials against ClientExec. Throws if CE is unreachable. */
+export async function verifyCredentials(creds: { email: string; password: string }): Promise<boolean> {
+  const body = new URLSearchParams({
+    email: creds.email,
+    passed_password: creds.password,
+    btnSubmit: "Login",
+  });
+  const res = await fetch(buildLoginUrl(), {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body,
+    redirect: "manual",
+    cache: "no-store",
+  });
+  return isLoginSuccess(res.status, res.headers.get("location"));
+}
