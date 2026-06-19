@@ -5,6 +5,7 @@ import { TerminalLogo } from "@/components/szz/terminal-logo";
 import { SectionEyebrow } from "@/components/szz/section-eyebrow";
 import { LoginForm } from "@/components/szz/login-form";
 import { buildLoginUrl, buildForgotPasswordUrl, buildSignupUrl } from "@/lib/clientexec";
+import { isLoggedOut } from "@/lib/login";
 
 export const metadata: Metadata = {
   title: "Sign in",
@@ -19,7 +20,12 @@ const features: { Icon: LucideIcon; color: string; text: string }[] = [
   { Icon: ShieldCheck, color: "var(--szz-green)", text: "Free SSL, security & 2FA built in" },
 ];
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const loggedOut = isLoggedOut(await searchParams);
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: "var(--szz-bg-deep)" }}>
       {/* left brand panel */}
@@ -58,6 +64,7 @@ export default function LoginPage() {
           ceLoginUrl={buildLoginUrl()}
           ceForgotUrl={buildForgotPasswordUrl()}
           ceSignupUrl={buildSignupUrl()}
+          loggedOut={loggedOut}
         />
       </div>
     </div>

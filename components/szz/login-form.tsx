@@ -10,10 +10,12 @@ export function LoginForm({
   ceLoginUrl,
   ceForgotUrl,
   ceSignupUrl,
+  loggedOut = false,
 }: {
   ceLoginUrl: string;
   ceForgotUrl: string;
   ceSignupUrl: string;
+  loggedOut?: boolean;
 }) {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -58,6 +60,14 @@ export function LoginForm({
 
   return (
     <div style={{ width: "100%", maxWidth: 400 }}>
+      {loggedOut && status === "idle" && (
+        <div role="status" style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18, border: "1px solid var(--szz-border)", borderRadius: 8, background: "var(--szz-bg-deep)", padding: "11px 14px" }}>
+          <span style={{ width: 7, height: 7, borderRadius: 999, background: "var(--szz-green)" }} />
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: 13, color: "var(--szz-text-light)" }}>
+            You&rsquo;ve been signed out.
+          </span>
+        </div>
+      )}
       <div style={{ marginBottom: 30, display: "flex", flexDirection: "column", gap: 8 }}>
         <h2 style={{ margin: 0, fontFamily: "var(--font-heading)", fontSize: 28, fontWeight: 700, letterSpacing: "-.5px", color: "var(--szz-text-primary)" }}>
           Sign in
