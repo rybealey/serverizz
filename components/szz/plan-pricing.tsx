@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -106,7 +105,13 @@ export function PlanPricing() {
               </div>
               <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--szz-text-dim)", marginTop: -8 }}>{billNote}</span>
               <Button asChild variant="primary" size="lg" style={{ width: "100%" }}>
-                <Link href="/support">Choose Entrepreneur</Link>
+                <a
+                  href="https://account.serverizz.com/order.php?step=1&productGroup=1&product=1"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Choose Entrepreneur
+                </a>
               </Button>
               <div style={{ height: 1, background: "var(--szz-border)" }} />
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -132,7 +137,13 @@ export function PlanPricing() {
               </div>
               <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--szz-text-dim)", marginTop: -8 }}>{billNote}</span>
               <Button asChild variant="secondary" size="lg" style={{ width: "100%" }}>
-                <Link href="/support">Choose Engineer</Link>
+                <a
+                  href="https://account.serverizz.com/order.php?step=1&productGroup=1&product=2"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Choose Engineer
+                </a>
               </Button>
               <div style={{ height: 1, background: "var(--szz-border)" }} />
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
