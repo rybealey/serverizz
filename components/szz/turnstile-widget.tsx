@@ -7,6 +7,7 @@ declare global {
     turnstile?: {
       render: (el: HTMLElement, opts: Record<string, unknown>) => string;
       remove: (id: string) => void;
+      reset: (id: string) => void;
     };
     onloadTurnstileCallback?: () => void;
   }
@@ -23,10 +24,17 @@ export function TurnstileWidget({
   siteKey,
   onVerify,
   onExpire,
+  resetSignal = 0,
 }: {
   siteKey: string;
   onVerify: (token: string) => void;
   onExpire: () => void;
+  /**
+   * Increment to force a fresh challenge. Turnstile tokens are single-use, so a
+   * caller that consumed a token (e.g. a failed login retry) bumps this to get a
+   * new one; the widget re-runs and fires `onVerify` again.
+   */
+  resetSignal?: number;
 }) {
   const ref = React.useRef<HTMLDivElement>(null);
   const widgetId = React.useRef<string | null>(null);
@@ -70,6 +78,18 @@ export function TurnstileWidget({
       }
     };
   }, [siteKey]);
+
+  // Re-run the challenge when the caller bumps resetSignal (skip the initial 0).
+  const firstReset = React.useRef(true);
+  React.useEffect(() => {
+    if (firstReset.current) {
+      firstReset.current = false;
+      return;
+    }
+    if (widgetId.current && window.turnstile) {
+      window.turnstile.reset(widgetId.current);
+    }
+  }, [resetSignal]);
 
   return <div ref={ref} style={{ minHeight: 65 }} />;
 }

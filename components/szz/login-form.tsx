@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { TurnstileWidget } from "@/components/szz/turnstile-widget";
 
 type Status = "idle" | "verifying" | "error";
 
@@ -10,18 +11,32 @@ export function LoginForm({
   ceLoginUrl,
   ceForgotUrl,
   ceSignupUrl,
+  turnstileSiteKey,
   loggedOut = false,
 }: {
   ceLoginUrl: string;
   ceForgotUrl: string;
   ceSignupUrl: string;
+  turnstileSiteKey: string;
   loggedOut?: boolean;
 }) {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [token, setToken] = React.useState<string | null>(null);
+  const [resetSignal, setResetSignal] = React.useState(0);
   const [status, setStatus] = React.useState<Status>("idle");
   const [error, setError] = React.useState<string | null>(null);
   const handoffRef = React.useRef<HTMLFormElement>(null);
+
+  const onVerify = React.useCallback((t: string) => setToken(t), []);
+  const onExpire = React.useCallback(() => setToken(null), []);
+
+  // The server consumes the token (single-use) on every attempt, so after a
+  // failed login clear it and re-run the challenge for the retry.
+  function resetTurnstile() {
+    setToken(null);
+    setResetSignal((n) => n + 1);
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -31,6 +46,11 @@ export function LoginForm({
       setError("Enter your email and password.");
       return;
     }
+    if (!token) {
+      setStatus("error");
+      setError("Please complete the verification.");
+      return;
+    }
     setEmail(trimmedEmail);
     setStatus("verifying");
     setError(null);
@@ -38,7 +58,7 @@ export function LoginForm({
       const res = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: trimmedEmail, password }),
+        body: JSON.stringify({ email: trimmedEmail, password, turnstileToken: token }),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data?.ok) {
@@ -50,9 +70,11 @@ export function LoginForm({
       }
       setStatus("error");
       setError(typeof data?.error === "string" ? data.error : "Incorrect email or password.");
+      resetTurnstile();
     } catch {
       setStatus("error");
       setError("Something went wrong. Please try again.");
+      resetTurnstile();
     }
   }
 
@@ -123,7 +145,13 @@ export function LoginForm({
             required
           />
         </div>
-        <Button type="submit" variant="primary" size="lg" disabled={verifying}>
+        <TurnstileWidget
+          siteKey={turnstileSiteKey}
+          onVerify={onVerify}
+          onExpire={onExpire}
+          resetSignal={resetSignal}
+        />
+        <Button type="submit" variant="primary" size="lg" disabled={verifying || !token}>
           {verifying ? "Signing in…" : "Sign in"}
         </Button>
       </form>
