@@ -36,13 +36,13 @@ function subscribe(cb: () => void) {
 }
 function getSnapshot(): Theme {
   try {
-    return (localStorage.getItem("szz-theme") as Theme | null) || "dark";
+    return (localStorage.getItem("szz-theme") as Theme | null) || "system";
   } catch {
-    return "dark";
+    return "system";
   }
 }
 function getServerSnapshot(): Theme {
-  return "dark";
+  return "system";
 }
 
 const OPTIONS: { value: Theme; label: string; Icon: typeof Sun }[] = [

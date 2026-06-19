@@ -78,7 +78,7 @@ export const metadata: Metadata = {
 };
 
 // Set the theme attribute before paint so there's no light/dark flash.
-const themeScript = `(function(){try{var t=localStorage.getItem('szz-theme')||'dark';var r=(t==='system')?(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):t;document.documentElement.setAttribute('data-theme',r);}catch(e){}})();`;
+const themeScript = `(function(){try{var t=localStorage.getItem('szz-theme')||'system';var r=(t==='system')?(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):t;document.documentElement.setAttribute('data-theme',r);}catch(e){}})();`;
 
 export default function RootLayout({
   children,
