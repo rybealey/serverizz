@@ -18,9 +18,8 @@ concurrency:
 
 env:
   SSH_HOST: 144.202.33.187
-  # sshd moved off 22 to a non-standard port; 2289 is allowlisted to GitHub
-  # Actions IP ranges (ipset gh_actions_v4 on the server, refreshed weekly).
-  SSH_PORT: "2289"
+  # sshd listens on a non-standard port (open via CSF TCP_IN).
+  SSH_PORT: "2298"
   SSH_USER: serverizz
   REMOTE_PATH: repositories/website
   NODE_VERSION: "24"
@@ -48,15 +47,6 @@ jobs:
         # runtime env). The site key is public; store it as a repo Variable.
         env:
           NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
-
-      - name: DEBUG runner egress IP + port reachability
-        run: |
-          echo "runner_ipv4=$(curl -s --max-time 10 https://api.ipify.org)"
-          if timeout 8 bash -c "cat < /dev/null > /dev/tcp/$SSH_HOST/$SSH_PORT" 2>/dev/null; then
-            echo "port_$SSH_PORT=OPEN"
-          else
-            echo "port_$SSH_PORT=BLOCKED_OR_TIMEOUT"
-          fi
 
       - name: Configure SSH
         run: |
