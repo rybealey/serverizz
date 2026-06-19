@@ -18,25 +18,43 @@ const primary = "var(--szz-text-primary)";
 const light = "var(--szz-text-light)";
 
 const included = [
-  ["5 email mailboxes", "on your own domain"],
   ["cPanel & WHM", "the control panel you know"],
-  ["CloudLinux 10", "stable, isolated tenancy"],
+  ["CloudLinux 10 Shared Pro", "stable, isolated tenancy"],
   ["MultiPHP Selector", "PHP 5.6 to current"],
   ["Imunify360", "proactive security & WAF"],
   ["CageFS", "per-account isolation"],
-  ["SITEJET builder", "AI website generation"],
-  ["WP Toolkit", "manage every WordPress site"],
-  ["Site Quality Monitoring", "catch issues early"],
+  ["WP Toolkit & Softaculous", "1-click installs & updates"],
+  ["AccelerateWP", "page cache & site speed"],
+  ["Free AutoSSL", "certs auto-issued & renewed"],
+  ["JetBackup restore", "self-serve file recovery"],
 ];
 
 const compareRows: { feature: string; ent: string; eng: string; entGreen?: boolean; engGreen?: boolean }[] = [
-  { feature: "Websites", ent: "5", eng: "Unlimited" },
-  { feature: "Storage", ent: "25 GB SSD", eng: "100 GB SSD" },
-  { feature: "Bandwidth", ent: "1 TB", eng: "1 TB" },
-  { feature: "Email mailboxes", ent: "5", eng: "5" },
-  { feature: "Node.js & Python apps", ent: "—", eng: "✓", engGreen: true },
-  { feature: "SSH & Git deploy", ent: "—", eng: "✓", engGreen: true },
+  { feature: "Storage", ent: "25 GB SSD", eng: "75 GB SSD" },
+  { feature: "Bandwidth", ent: "Unmetered*", eng: "Unmetered*" },
+  { feature: "Websites", ent: "4", eng: "Unlimited" },
+  { feature: "Email mailboxes", ent: "25", eng: "Unlimited" },
+  { feature: "MySQL databases", ent: "10", eng: "Unlimited" },
+  { feature: "Node, Python & Ruby apps", ent: "3", eng: "10" },
+  { feature: "Dedicated vCPU", ent: "2 threads", eng: "3 threads" },
+  { feature: "Guaranteed RAM", ent: "2 GB", eng: "3 GB" },
+  { feature: "Jailed SSH + Git deploy", ent: "—", eng: "✓", engGreen: true },
   { feature: "Dedicated account manager", ent: "✓", eng: "✓", entGreen: true, engGreen: true },
+];
+
+const deepSpecs: { feature: string; ent: string; eng: string }[] = [
+  { feature: "CPU (CloudLinux LVE)", ent: "200%", eng: "300%" },
+  { feature: "Physical memory (PMEM)", ent: "2 GB", eng: "3 GB" },
+  { feature: "Dedicated I/O", ent: "5 MB/s", eng: "8 MB/s" },
+  { feature: "IOPS", ent: "2,048", eng: "4,096" },
+  { feature: "Entry processes", ent: "25", eng: "40" },
+  { feature: "Concurrent processes", ent: "100", eng: "150" },
+  { feature: "Inodes (files)", ent: "500,000", eng: "1,000,000" },
+  { feature: "FTP accounts", ent: "5", eng: "25" },
+  { feature: "Subdomains", ent: "25", eng: "100" },
+  { feature: "Add-on domains", ent: "3", eng: "Unlimited" },
+  { feature: "Remote MySQL", ent: "—", eng: "✓" },
+  { feature: "Hourly email per domain", ent: "150", eng: "300" },
 ];
 
 const faqs = [
@@ -138,6 +156,45 @@ export default function HostingPage() {
               </div>
             ))}
           </div>
+
+          <p style={{ margin: 0, fontSize: 12, lineHeight: 1.6, color: "var(--szz-text-dim)" }}>
+            * Unmetered under fair use — soft monthly caps of 1&nbsp;TB (Entrepreneur) and 3&nbsp;TB (Engineer).
+            &ldquo;Unlimited&rdquo; fields carry generous abuse-protection caps.
+          </p>
+
+          {/* deep specs (native disclosure — no JS needed) */}
+          <details className="szz-deepspecs" style={{ border: "1px solid var(--szz-border)", borderRadius: 12, background: "var(--szz-bg-card)", overflow: "hidden" }}>
+            <summary style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "16px 20px" }}>
+              <span style={{ display: "inline-flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: ".6px", fontWeight: 600, color: light }}>FULL TECHNICAL SPECS</span>
+                <span style={{ fontSize: 13, color: "var(--szz-text-dim)" }}>the CloudLinux &amp; cPanel limits, for the curious</span>
+              </span>
+              <span className="szz-deepspecs__chev" style={{ color: "var(--szz-text-dim)", fontSize: 12 }} aria-hidden>▾</span>
+            </summary>
+            <div style={{ borderTop: "1px solid var(--szz-border)" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1.8fr 1fr 1fr", background: "var(--szz-bg-raised)", borderBottom: "1px solid var(--szz-border)" }}>
+                <div style={{ ...cell, fontSize: 12, fontWeight: 600, color: muted }}>Per-account limit</div>
+                <div style={{ ...cell, textAlign: "center", fontSize: 12, fontWeight: 600, color: primary }}>Entrepreneur</div>
+                <div style={{ ...cell, textAlign: "center", fontSize: 12, fontWeight: 600, color: primary }}>Engineer</div>
+              </div>
+              {deepSpecs.map((row, i) => (
+                <div
+                  key={row.feature}
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1.8fr 1fr 1fr",
+                    borderBottom: i === deepSpecs.length - 1 ? "none" : "1px solid var(--szz-border)",
+                    fontSize: 13,
+                    color: muted,
+                  }}
+                >
+                  <div style={cell}>{row.feature}</div>
+                  <div style={{ ...cell, textAlign: "center", color: row.ent === "—" ? "var(--szz-text-faint)" : row.ent === "✓" ? "var(--szz-green)" : light }}>{row.ent}</div>
+                  <div style={{ ...cell, textAlign: "center", color: row.eng === "—" ? "var(--szz-text-faint)" : row.eng === "✓" ? "var(--szz-green)" : light }}>{row.eng}</div>
+                </div>
+              ))}
+            </div>
+          </details>
         </div>
       </section>
 

@@ -12,19 +12,19 @@ const primary = "var(--szz-text-primary)";
 const light = "var(--szz-text-light)";
 
 const entFeatures = [
-  "Up to 5 websites",
-  "25 GB SSD storage",
-  "5 email mailboxes",
-  "Free SSL + daily backups",
-  "Free migration",
+  "Up to 4 websites",
+  "25 GB SSD · unmetered bandwidth",
+  "25 email mailboxes",
+  "10 MySQL databases",
+  "Free SSL, daily backups & migration",
   "Dedicated account manager",
 ];
 const engFeatures = [
-  "Host Node.js & Python apps",
-  "SSH & Git deploy",
-  "Unlimited websites",
-  "100 GB SSD storage",
-  "Staging environments",
+  "Node.js, Python & Ruby apps — 10 slots",
+  "Jailed SSH + Git deploy",
+  "Unlimited sites, mailboxes & databases",
+  "75 GB SSD · unmetered bandwidth",
+  "Remote MySQL & full DNS control",
   "Dedicated account manager",
 ];
 

@@ -40,8 +40,8 @@ const included = [
 ];
 
 const specs = [
-  ["Storage", "25 GB NVMe"],
-  ["Bandwidth", "1 TB/mo"],
+  ["Storage", "25 GB SSD"],
+  ["Bandwidth", "Unmetered"],
   ["Monthly visitors", "~250k"],
   ["Mailboxes", "included free"],
   ["PHP / MySQL", "latest"],
@@ -98,11 +98,11 @@ export default function WordPressPage() {
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, color: muted }}>
                 <span>Sites</span>
-                <span style={{ color: light }}>up to 5</span>
+                <span style={{ color: light }}>up to 4</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, color: muted }}>
                 <span>Storage</span>
-                <span style={{ color: light }}>25 GB NVMe</span>
+                <span style={{ color: light }}>25 GB SSD</span>
               </div>
             </div>
             <Button asChild variant="primary" size="lg" style={{ width: "100%" }}>

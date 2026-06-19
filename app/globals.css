@@ -288,6 +288,13 @@ html[data-theme="light"] .szz-term {
 .szz-card--interactive { transition: var(--transition-colors); cursor: pointer; }
 .szz-card--interactive:hover { border-color: var(--szz-accent-blue); }
 
+/* Disclosure (deep specs) */
+.szz-deepspecs > summary { list-style: none; cursor: pointer; transition: var(--transition-colors); }
+.szz-deepspecs > summary::-webkit-details-marker { display: none; }
+.szz-deepspecs > summary:hover { background: var(--szz-bg-raised); }
+.szz-deepspecs__chev { transition: transform 0.2s var(--ease-standard); }
+.szz-deepspecs[open] .szz-deepspecs__chev { transform: rotate(180deg); }
+
 /* Input */
 .szz-field { display: flex; flex-direction: column; gap: 8px; width: 100%; }
 .szz-field__label { font-family: var(--font-body); font-size: 13px; font-weight: 500; color: var(--szz-text-light); }
