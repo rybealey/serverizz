@@ -8,8 +8,6 @@ import "./globals.css";
 // We import the Font Awesome core CSS manually above, so stop it from
 // injecting its own <style> at runtime (which causes oversized-icon flash).
 config.autoAddCss = false;
-import { SiteNav } from "@/components/szz/site-nav";
-import { SiteFooter } from "@/components/szz/site-footer";
 import { AffiliateTracker } from "@/components/affiliate-tracker";
 import {
   ORG,
@@ -131,11 +129,7 @@ export default function RootLayout({
             publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
           }}
         />
-        <div style={{ minHeight: "100vh", background: "var(--szz-bg-deep)" }}>
-          <SiteNav />
-          <main>{children}</main>
-          <SiteFooter />
-        </div>
+        {children}
         <AffiliateTracker />
       </body>
     </html>

@@ -137,7 +137,7 @@ export function SiteNav() {
 
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <Link
-            href="/support"
+            href="/login"
             style={{
               fontFamily: "var(--font-body)",
               fontSize: 14,

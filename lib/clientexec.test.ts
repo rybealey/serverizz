@@ -82,3 +82,61 @@ describe("getTldPricing", () => {
     ]);
   });
 });
+
+import {
+  buildLoginUrl,
+  buildForgotPasswordUrl,
+  buildSignupUrl,
+  isLoginSuccess,
+  verifyCredentials,
+} from "@/lib/clientexec";
+
+function mockFetchResponse(opts: { status: number; location?: string | null }) {
+  return vi.fn().mockResolvedValue({
+    status: opts.status,
+    headers: { get: (k: string) => (k.toLowerCase() === "location" ? opts.location ?? null : null) },
+  });
+}
+
+describe("buildLoginUrl", () => {
+  it("targets the CE admin login action", () => {
+    expect(buildLoginUrl()).toContain("/index.php?fuse=admin&action=Login");
+  });
+});
+
+describe("buildForgotPasswordUrl / buildSignupUrl", () => {
+  it("are absolute CE URLs", () => {
+    expect(buildForgotPasswordUrl()).toMatch(/^https?:\/\/.+/);
+    expect(buildSignupUrl()).toMatch(/^https?:\/\/.+/);
+  });
+});
+
+describe("isLoginSuccess", () => {
+  it("treats a redirect away from the login screen as success", () => {
+    expect(isLoginSuccess(302, "https://account.serverizz.com/index.php?fuse=clients")).toBe(true);
+  });
+  it("treats a 200 (login form re-rendered) as failure", () => {
+    expect(isLoginSuccess(200, null)).toBe(false);
+  });
+  it("treats a redirect back to the login screen as failure", () => {
+    expect(isLoginSuccess(302, "https://account.serverizz.com/index.php?fuse=admin&action=Login")).toBe(false);
+  });
+  it("treats a redirect with no location as failure", () => {
+    expect(isLoginSuccess(302, null)).toBe(false);
+  });
+});
+
+describe("verifyCredentials", () => {
+  it("returns true when CE redirects to the dashboard", async () => {
+    vi.stubGlobal("fetch", mockFetchResponse({ status: 302, location: "https://account.serverizz.com/index.php?fuse=clients" }));
+    expect(await verifyCredentials({ email: "a@b.com", password: "pw" })).toBe(true);
+  });
+  it("returns false when CE re-renders the login form (200)", async () => {
+    vi.stubGlobal("fetch", mockFetchResponse({ status: 200 }));
+    expect(await verifyCredentials({ email: "a@b.com", password: "bad" })).toBe(false);
+  });
+  it("rejects when CE is unreachable", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network")));
+    await expect(verifyCredentials({ email: "a@b.com", password: "pw" })).rejects.toThrow();
+  });
+});

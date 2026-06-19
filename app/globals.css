@@ -395,3 +395,20 @@ html[data-theme="light"] .szz-term {
 @media (prefers-reduced-motion: reduce) {
   .szz-term__cursor { animation: none; }
 }
+
+/* ---------- Login brand aside (always dark, regardless of theme) ---------- */
+.szz-login-aside {
+  --szz-text-light: #cbd5e1;
+  --szz-text-muted: #94a3b8;
+  --szz-text-faint: #64748b;
+  --szz-accent-blue: #60a5fa;
+}
+.szz-login-aside .szz-logo__word {
+  color: #fff;
+}
+@media (max-width: 640px) {
+  /* On mobile the brand panel collapses; the form panel goes full-width. */
+  .szz-login-aside {
+    display: none !important;
+  }
+}
