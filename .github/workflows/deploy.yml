@@ -18,7 +18,9 @@ concurrency:
 
 env:
   SSH_HOST: 144.202.33.187
-  SSH_PORT: "22"
+  # sshd moved off 22 to a non-standard port; 2289 is allowlisted to GitHub
+  # Actions IP ranges (ipset gh_actions_v4 on the server, refreshed weekly).
+  SSH_PORT: "2289"
   SSH_USER: serverizz
   REMOTE_PATH: repositories/website
   NODE_VERSION: "24"
