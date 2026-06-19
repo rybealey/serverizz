@@ -140,3 +140,78 @@ describe("verifyCredentials", () => {
     await expect(verifyCredentials({ email: "a@b.com", password: "pw" })).rejects.toThrow();
   });
 });
+
+import {
+  buildRegisterFormUrl,
+  buildCreateAccountUrl,
+  parseSessionHash,
+  isRegisterSuccess,
+  createAccount,
+} from "@/lib/clientexec";
+
+describe("buildRegisterFormUrl / buildCreateAccountUrl", () => {
+  it("are absolute CE URLs targeting the home fuse", () => {
+    expect(buildRegisterFormUrl()).toMatch(/^https?:\/\/.+/);
+    expect(buildCreateAccountUrl()).toContain("fuse=home&action=createaccount");
+  });
+});
+
+describe("parseSessionHash", () => {
+  it("reads the sessionHash hidden field (value after name)", () => {
+    const html = `<input type="hidden" name="sessionHash" value="abc123">`;
+    expect(parseSessionHash(html)).toBe("abc123");
+  });
+  it("reads the sessionHash hidden field (value before name)", () => {
+    const html = `<input value="zzz999" name="sessionHash" type="hidden">`;
+    expect(parseSessionHash(html)).toBe("zzz999");
+  });
+  it("returns null when absent", () => {
+    expect(parseSessionHash(`<form></form>`)).toBeNull();
+  });
+});
+
+describe("isRegisterSuccess", () => {
+  it("treats a redirect away from the register form as success", () => {
+    expect(isRegisterSuccess(302, "https://account.serverizz.com/index.php?fuse=clients", "")).toBe(true);
+  });
+  it("treats a redirect back to the register form as failure", () => {
+    expect(isRegisterSuccess(302, "https://account.serverizz.com/index.php?fuse=home&action=register", "")).toBe(false);
+  });
+  it("treats a 200 with a success marker as success", () => {
+    expect(isRegisterSuccess(200, null, "Thanks! Please verify your email to continue.")).toBe(true);
+  });
+  it("treats a 200 with an error marker as failure", () => {
+    expect(isRegisterSuccess(200, null, "That email is already registered.")).toBe(false);
+  });
+});
+
+describe("createAccount", () => {
+  it("GETs a session+hash then POSTs guest fields and returns true on success", async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        headers: { get: (k: string) => (k.toLowerCase() === "set-cookie" ? "CESESSID=sess1; path=/" : null) },
+        text: () => Promise.resolve(`<input type="hidden" name="sessionHash" value="h-42">`),
+      })
+      .mockResolvedValueOnce({
+        status: 302,
+        headers: { get: (k: string) => (k.toLowerCase() === "location" ? "https://account.serverizz.com/index.php?fuse=clients" : null) },
+        text: () => Promise.resolve(""),
+      });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const ok = await createAccount({ firstName: "Jane", lastName: "Baker", email: "jane@b.com" });
+    expect(ok).toBe(true);
+
+    const postBody = fetchMock.mock.calls[1][1].body as URLSearchParams;
+    expect(postBody.get("guestFirstName")).toBe("Jane");
+    expect(postBody.get("guestLastName")).toBe("Baker");
+    expect(postBody.get("guestEmail")).toBe("jane@b.com");
+    expect(postBody.get("sessionHash")).toBe("h-42");
+    expect(fetchMock.mock.calls[1][1].headers.Cookie).toBe("CESESSID=sess1");
+  });
+
+  it("rejects when CE is unreachable", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network")));
+    await expect(createAccount({ firstName: "A", lastName: "B", email: "a@b.com" })).rejects.toThrow();
+  });
+});

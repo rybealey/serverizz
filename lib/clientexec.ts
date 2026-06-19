@@ -89,6 +89,76 @@ export function buildSignupUrl(): string {
   return `${CE_URL}/order.php`;
 }
 
+// ---- Account creation (external registration form) ----
+// CE's external registration posts guestFirstName/guestLastName/guestEmail plus a
+// hidden sessionHash (a CSRF token tied to a CE PHP session). We GET the form page
+// for a session cookie + hash, then POST createaccount with that cookie.
+// verify-against-live-instance: confirm the form page URL, the cookie name, the
+// success signal, and the sessionHash field on account.serverizz.com.
+
+export function buildRegisterFormUrl(): string {
+  return `${CE_URL}/index.php?fuse=home&controller=order&action=register`;
+}
+
+export function buildCreateAccountUrl(): string {
+  return `${CE_URL}/index.php?fuse=home&action=createaccount`;
+}
+
+/** Extract the sessionHash hidden-field value from CE's registration form HTML. */
+export function parseSessionHash(html: string): string | null {
+  const m =
+    html.match(/name=["']sessionHash["'][^>]*\bvalue=["']([^"']*)["']/i) ??
+    html.match(/\bvalue=["']([^"']*)["'][^>]*name=["']sessionHash["']/i);
+  return m ? m[1] : null;
+}
+
+/**
+ * Decide whether a createaccount POST succeeded, from the (redirect:"manual")
+ * response. Heuristic — isolated for easy tuning against the live instance:
+ *   - a 3xx redirect that does NOT go back to the register form → success
+ *   - a 200 whose body shows a success marker (and no error marker) → success
+ *   - everything else → failure
+ */
+export function isRegisterSuccess(status: number, location: string | null, body: string): boolean {
+  const isRedirect = status >= 300 && status < 400;
+  if (isRedirect) {
+    const loc = (location ?? "").toLowerCase();
+    return !!loc && !loc.includes("action=register");
+  }
+  if (/error|already (registered|exists)|invalid/i.test(body)) return false;
+  return /success|verify your email|check your email|thank/i.test(body);
+}
+
+/** Create a ClientExec guest account from name + email. Throws if CE is unreachable. */
+export async function createAccount(input: {
+  firstName: string;
+  lastName: string;
+  email: string;
+}): Promise<boolean> {
+  const formRes = await fetch(buildRegisterFormUrl(), { cache: "no-store" });
+  const setCookie = formRes.headers.get("set-cookie") ?? "";
+  const cookie = setCookie.split(";")[0];
+  const sessionHash = parseSessionHash(await formRes.text()) ?? "";
+
+  const body = new URLSearchParams({
+    guestFirstName: input.firstName,
+    guestLastName: input.lastName,
+    guestEmail: input.email,
+    sessionHash,
+  });
+  const res = await fetch(buildCreateAccountUrl(), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      ...(cookie ? { Cookie: cookie } : {}),
+    },
+    body,
+    redirect: "manual",
+    cache: "no-store",
+  });
+  return isRegisterSuccess(res.status, res.headers.get("location"), await res.text());
+}
+
 /**
  * Decide whether a ClientExec login POST succeeded, from the (redirect:"manual")
  * response. Heuristic — isolated here so it's trivial to adjust after testing
