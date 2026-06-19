@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import { Sora, Inter, JetBrains_Mono } from "next/font/google";
 import { OrganizationJsonLd, JsonLdScript } from "next-seo";
+import { config } from "@fortawesome/fontawesome-svg-core";
+import "@fortawesome/fontawesome-svg-core/styles.css";
 import "./globals.css";
+
+// We import the Font Awesome core CSS manually above, so stop it from
+// injecting its own <style> at runtime (which causes oversized-icon flash).
+config.autoAddCss = false;
 import { SiteNav } from "@/components/szz/site-nav";
 import { SiteFooter } from "@/components/szz/site-footer";
 import {
