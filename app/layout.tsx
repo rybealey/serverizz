@@ -10,6 +10,7 @@ import "./globals.css";
 config.autoAddCss = false;
 import { SiteNav } from "@/components/szz/site-nav";
 import { SiteFooter } from "@/components/szz/site-footer";
+import { AffiliateTracker } from "@/components/affiliate-tracker";
 import {
   ORG,
   SITE_DESCRIPTION,
@@ -135,6 +136,7 @@ export default function RootLayout({
           <main>{children}</main>
           <SiteFooter />
         </div>
+        <AffiliateTracker />
       </body>
     </html>
   );
