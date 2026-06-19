@@ -148,7 +148,13 @@ export function SiteNav() {
             Log In
           </Link>
           <Button asChild variant="primary" size="sm">
-            <Link href="/hosting">Get Started</Link>
+            <a
+              href="https://account.serverizz.com/order.php"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Get Started
+            </a>
           </Button>
           <ThemeToggle />
         </div>
