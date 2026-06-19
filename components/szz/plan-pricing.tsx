@@ -20,7 +20,7 @@ const entFeatures = [
   "Dedicated account manager",
 ];
 const engFeatures = [
-  "Node.js, Python & Ruby apps — 10 slots",
+  "Node.js & Python apps — 10 slots",
   "Jailed SSH + Git deploy",
   "Unlimited sites, mailboxes & databases",
   "75 GB SSD · unmetered bandwidth",

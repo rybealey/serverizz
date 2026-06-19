@@ -35,7 +35,7 @@ const compareRows: { feature: string; ent: string; eng: string; entGreen?: boole
   { feature: "Websites", ent: "4", eng: "Unlimited" },
   { feature: "Email mailboxes", ent: "25", eng: "Unlimited" },
   { feature: "MySQL databases", ent: "10", eng: "Unlimited" },
-  { feature: "Node, Python & Ruby apps", ent: "3", eng: "10" },
+  { feature: "Node.js & Python apps", ent: "—", eng: "10", engGreen: true },
   { feature: "Dedicated vCPU", ent: "2 threads", eng: "3 threads" },
   { feature: "Guaranteed RAM", ent: "2 GB", eng: "3 GB" },
   { feature: "Jailed SSH + Git deploy", ent: "—", eng: "✓", engGreen: true },
@@ -57,10 +57,35 @@ const deepSpecs: { feature: string; ent: string; eng: string }[] = [
   { feature: "Hourly email per domain", ent: "150", eng: "300" },
 ];
 
-const faqs = [
-  ["Can I switch plans later?", "Anytime — upgrades are instant, no re-migration."],
-  ["Do you really migrate my site free?", "Yes — your account manager handles the move."],
-  ["What's the refund policy?", "30 days, money back, no questions asked."],
+const faqs: [string, string][] = [
+  [
+    "Which plan should I choose?",
+    "Pick Entrepreneur if you run business websites or WordPress — it covers up to 4 sites, 25 mailboxes and 10 databases. Choose Engineer when you deploy your own code: it adds Node.js and Python app hosting, jailed SSH, Git, Remote MySQL and triple the storage. You can start on one and move to the other whenever you like.",
+  ],
+  [
+    "Can I host Node.js or Python apps?",
+    "Yes — on the Engineer plan. It runs up to 10 applications through the CloudLinux Node.js and Python selectors, with jailed SSH and Git deploy so you can ship straight from your repository. Entrepreneur is tuned for sites, WordPress and email rather than custom apps. (Ruby app hosting isn’t available on either plan yet.)",
+  ],
+  [
+    "Is “unmetered” bandwidth really unlimited?",
+    "We don’t bill per gigabyte. Unmetered runs under a fair-use policy with soft monthly ceilings of 1 TB on Entrepreneur and 3 TB on Engineer, which comfortably covers normal site and app traffic. If you ever get close, we reach out to talk options — we don’t silently throttle you or pull the site down.",
+  ],
+  [
+    "How do backups and restores work?",
+    "Every account is backed up daily to separate off-server storage, and we manage it for you. Need an older copy of a file or folder? Restore it yourself from cPanel in a couple of clicks with JetBackup — no support ticket required.",
+  ],
+  [
+    "Can I send email from my site or app?",
+    "Yes — every plan includes mailboxes on your own domain (25 on Entrepreneur, unlimited on Engineer) with SPF and DKIM configured for deliverability. For high-volume transactional or marketing email from an app, we recommend routing through a dedicated relay such as Postmark, SendGrid or Mailgun to keep your sending reputation and inbox placement strong.",
+  ],
+  [
+    "What do you handle, and what do I manage?",
+    "We run the whole stack — cPanel & WHM on CloudLinux 10, Imunify360 security, AutoSSL certificates, PHP versions, caching and the server itself — and a dedicated account manager is your direct line. You stay in control of your sites, apps, databases and email through cPanel, with full SSH and Git on Engineer.",
+  ],
+  [
+    "Do you migrate my site, and what if it’s not for me?",
+    "We migrate your existing sites and email for free — your account manager runs the move and confirms everything works before going live. And if it isn’t the right fit, every plan is backed by a 30-day, money-back guarantee, no questions asked.",
+  ],
 ];
 
 const cell = { padding: "14px 20px" } as const;
@@ -210,17 +235,15 @@ export default function HostingPage() {
               style={{
                 border: "1px solid var(--szz-border)",
                 borderRadius: 10,
-                padding: "18px 22px",
+                padding: "20px 22px",
                 background: "var(--szz-bg-card)",
                 display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                gap: 16,
-                flexWrap: "wrap",
+                flexDirection: "column",
+                gap: 8,
               }}
             >
-              <span style={{ fontSize: 15, color: primary }}>{q}</span>
-              <span style={{ fontSize: 14, color: muted }}>{a}</span>
+              <span style={{ fontSize: 15, fontWeight: 600, color: primary }}>{q}</span>
+              <span style={{ fontSize: 14, lineHeight: 1.6, color: muted }}>{a}</span>
             </div>
           ))}
         </div>

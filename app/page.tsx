@@ -249,7 +249,7 @@ export default function HomePage() {
             <Card>
               <div style={{ display: "flex", flexDirection: "column", gap: 8, textAlign: "left" }}>
                 <span style={{ fontFamily: display, fontSize: 22, fontWeight: 700, color: primary }}>Engineer</span>
-                <span style={{ fontSize: 13, color: muted }}>Adds Node.js, Python &amp; Ruby app hosting</span>
+                <span style={{ fontSize: 13, color: muted }}>Adds Node.js &amp; Python app hosting</span>
                 <span style={{ fontFamily: "var(--font-mono)", fontSize: 30, color: primary }}>
                   $25<span style={{ fontSize: 14, color: "var(--szz-text-dim)" }}>/mo</span>
                 </span>
