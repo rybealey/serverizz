@@ -46,6 +46,19 @@ const products = [
 
 export default async function HomePage() {
   const pricing = await getTldPricing(FEATURED_TLDS);
+
+  const cheapest = pricing
+    .filter((p) => p.formatedPrice !== null)
+    .reduce<{ tld: string; formatedPrice: string } | null>((best, p) => {
+      const num = parseFloat((p.formatedPrice as string).replace(/[^0-9.]/g, ""));
+      if (best === null) return p as { tld: string; formatedPrice: string };
+      const bestNum = parseFloat((best.formatedPrice as string).replace(/[^0-9.]/g, ""));
+      return num < bestNum ? (p as { tld: string; formatedPrice: string }) : best;
+    }, null);
+  const domainsFromPrice = cheapest
+    ? "from " + (cheapest.formatedPrice as string).replace(/\s*USD\s*$/i, "") + " →"
+    : "Search 400+ extensions →";
+
   return (
     <div>
       {/* hero */}
@@ -137,7 +150,7 @@ export default async function HomePage() {
                     </h3>
                     <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: muted }}>{body}</p>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: 13, color: priceColor, marginTop: "auto" }}>
-                      {price}
+                      {href === "/domains" ? domainsFromPrice : price}
                     </span>
                   </div>
                 </Card>
