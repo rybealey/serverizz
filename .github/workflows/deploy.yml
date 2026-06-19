@@ -41,6 +41,11 @@ jobs:
 
       - name: Build
         run: npm run build
+        # NEXT_PUBLIC_* is inlined into the client bundle at build time, so the
+        # Turnstile site key must be present HERE (not just in the server's
+        # runtime env). The site key is public; store it as a repo Variable.
+        env:
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
 
       - name: Configure SSH
         run: |
