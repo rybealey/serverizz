@@ -36,26 +36,79 @@ export function evaluateMaintenance(data: StatusPageResponse | null | undefined,
   return { active: false, title: null };
 }
 
+/** Overall health rolled up from per-monitor heartbeats + maintenance. */
+export type SystemStatusLevel = "operational" | "maintenance" | "degraded" | "down" | "unknown";
+export type SystemStatus = { level: SystemStatusLevel; label: string };
+
+/** Kuma heartbeat status codes: 0 = down, 1 = up, 2 = pending, 3 = maintenance. */
+type Heartbeat = { status?: number };
+export type HeartbeatResponse = { heartbeatList?: Record<string, Heartbeat[]> };
+
 const STATUS_URL =
   process.env.UPTIME_KUMA_STATUS_URL ?? "https://status.serverizz.com/api/status-page/web";
+const HEARTBEAT_URL =
+  process.env.UPTIME_KUMA_HEARTBEAT_URL ??
+  "https://status.serverizz.com/api/status-page/heartbeat/web";
 const TIMEOUT_MS = 3000;
 
-export async function getMaintenanceStatus(): Promise<MaintenanceStatus> {
+async function fetchJson<T>(url: string): Promise<T | null> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
-    const res = await fetch(STATUS_URL, {
+    const res = await fetch(url, {
       signal: controller.signal,
       headers: { Accept: "application/json" },
       // Share one upstream call across visitors for ~45s.
       next: { revalidate: 45 },
     });
-    if (!res.ok) return { active: false, title: null };
-    const data = (await res.json()) as StatusPageResponse;
-    return evaluateMaintenance(data, new Date());
+    if (!res.ok) return null;
+    return (await res.json()) as T;
   } catch {
-    return { active: false, title: null };
+    return null;
   } finally {
     clearTimeout(timer);
   }
+}
+
+export async function getMaintenanceStatus(): Promise<MaintenanceStatus> {
+  const data = await fetchJson<StatusPageResponse>(STATUS_URL);
+  return evaluateMaintenance(data, new Date());
+}
+
+export function evaluateSystemStatus(
+  statusPage: StatusPageResponse | null | undefined,
+  heartbeats: HeartbeatResponse | null | undefined,
+  now: Date,
+): SystemStatus {
+  // Without heartbeats we can't judge monitor health — don't claim "operational".
+  const lists = heartbeats?.heartbeatList;
+  if (!lists || Object.keys(lists).length === 0) {
+    return { level: "unknown", label: "Live status" };
+  }
+  // Active maintenance takes visual priority over an otherwise-healthy read.
+  if (evaluateMaintenance(statusPage, now).active) {
+    return { level: "maintenance", label: "Maintenance in progress" };
+  }
+  let total = 0;
+  let down = 0;
+  for (const beats of Object.values(lists)) {
+    const last = beats[beats.length - 1];
+    if (!last || typeof last.status !== "number") continue;
+    total++;
+    if (last.status === 0) down++;
+  }
+  if (down > 0) {
+    return down >= total
+      ? { level: "down", label: "Major outage" }
+      : { level: "degraded", label: "Partial outage" };
+  }
+  return { level: "operational", label: "All systems operational" };
+}
+
+export async function getSystemStatus(): Promise<SystemStatus> {
+  const [statusPage, heartbeats] = await Promise.all([
+    fetchJson<StatusPageResponse>(STATUS_URL),
+    fetchJson<HeartbeatResponse>(HEARTBEAT_URL),
+  ]);
+  return evaluateSystemStatus(statusPage, heartbeats, new Date());
 }

@@ -8,8 +8,10 @@ import { SectionEyebrow } from "@/components/szz/section-eyebrow";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import type { BadgeProps } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { breadcrumbTrail, pageMetadata } from "@/lib/seo";
+import { getSystemStatus, type SystemStatusLevel } from "@/lib/uptime-kuma";
 
 export const metadata: Metadata = pageMetadata({
   title: "Support",
@@ -49,14 +51,31 @@ const channels: {
     Icon: Activity,
     title: "Status & uptime",
     body: "status.serverizz.com",
-    badge: <Badge variant="success" dot>All systems operational</Badge>,
+    // badge is injected dynamically from the live status page (see SupportPage).
     href: "https://status.serverizz.com",
   },
 ];
 
+const STATUS_VARIANT: Record<SystemStatusLevel, NonNullable<BadgeProps["variant"]>> = {
+  operational: "success",
+  maintenance: "warning",
+  degraded: "warning",
+  down: "error",
+  unknown: "neutral",
+};
+
 export default async function SupportPage() {
-  const [topics, ticketTypes] = await Promise.all([getPopularKbTopics(), getSupportTicketTypes()]);
+  const [topics, ticketTypes, status] = await Promise.all([
+    getPopularKbTopics(),
+    getSupportTicketTypes(),
+    getSystemStatus(),
+  ]);
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? TEST_SITE_KEY;
+  const statusBadge = (
+    <Badge variant={STATUS_VARIANT[status.level]} dot>
+      {status.label}
+    </Badge>
+  );
   return (
     <div>
       <BreadcrumbJsonLd items={breadcrumbTrail("Support", "/support")} />
@@ -78,6 +97,7 @@ export default async function SupportPage() {
       <section style={{ padding: "0 48px 20px" }}>
         <div className="szz-grid-3" style={{ maxWidth: 1100, margin: "0 auto", gap: 18 }}>
           {channels.map(({ Icon, title, body, badge, note, href }) => {
+            const effectiveBadge = title === "Status & uptime" ? statusBadge : badge;
             const card = (
               <Card interactive style={{ height: "100%" }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-start", height: "100%" }}>
@@ -86,8 +106,8 @@ export default async function SupportPage() {
                   </div>
                   <span style={{ fontFamily: display, fontSize: 19, fontWeight: 700, color: primary }}>{title}</span>
                   <span style={{ fontSize: 14, lineHeight: 1.5, color: muted }}>{body}</span>
-                  {badge && <div style={{ marginTop: "auto" }}>{badge}</div>}
-                  {note && <span style={{ marginTop: badge ? undefined : "auto", fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--szz-text-dim)" }}>{note}</span>}
+                  {effectiveBadge && <div style={{ marginTop: "auto" }}>{effectiveBadge}</div>}
+                  {note && <span style={{ marginTop: effectiveBadge ? undefined : "auto", fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--szz-text-dim)" }}>{note}</span>}
                 </div>
               </Card>
             );
