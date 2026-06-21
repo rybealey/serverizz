@@ -204,8 +204,11 @@ export async function getSupportTicketTypes(): Promise<TicketType[]> {
  * response. Heuristic — isolated for tuning against the live instance:
  *   - a 3xx redirect that does NOT go back to the submit-ticket view and is
  *     NOT the logout/login bounce → success
- *   - a 200 with an error marker → failure
+ *   - a non-3xx response (200/4xx/5xx) → failure
  *   - everything else → failure
+ *
+ * Note: the `body` parameter is currently unused; it is kept for symmetry with
+ * the sibling `isRegisterSuccess` signature and reserved for future tuning.
  */
 export function isTicketSuccess(status: number, location: string | null, body: string): boolean {
   const isRedirect = status >= 300 && status < 400;
@@ -228,6 +231,7 @@ export async function createSupportTicket(input: {
   ticketType: string;
 }): Promise<boolean> {
   const formRes = await fetch(SUBMIT_TICKET_URL, { cache: "no-store" });
+  if (!formRes.ok) throw new Error(`ClientExec HTTP ${formRes.status}`);
   const setCookie = formRes.headers.get("set-cookie") ?? "";
   const cookie = setCookie.split(";")[0];
 

@@ -411,4 +411,21 @@ describe("createSupportTicket", () => {
     vi.stubGlobal("fetch", fetchMock);
     expect(await createSupportTicket({ name: "A", email: "a@x.com", subject: "S", message: "M", ticketType: "3" })).toBe(false);
   });
+
+  it("rejects when the GET resolves with a non-ok status", async () => {
+    // The GET returns a non-ok response; the function must throw before attempting the POST.
+    // The second mock return would succeed if the guard were absent, ensuring this test
+    // specifically validates the guard and not a downstream failure.
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({ ok: false, status: 500, headers: { get: () => null }, text: () => Promise.resolve("") })
+      .mockResolvedValueOnce({ ok: false, status: 302, headers: { get: (h: string) => (h.toLowerCase() === "location" ? "index.php?fuse=support&view=ticketsubmitted" : null) }, text: () => Promise.resolve("") });
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(createSupportTicket({ name: "A", email: "a@x.com", subject: "S", message: "M", ticketType: "3" })).rejects.toThrow();
+  });
+
+  it("rejects when the GET fetch itself rejects (network error)", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network")));
+    await expect(createSupportTicket({ name: "A", email: "a@x.com", subject: "S", message: "M", ticketType: "3" })).rejects.toThrow();
+  });
 });
