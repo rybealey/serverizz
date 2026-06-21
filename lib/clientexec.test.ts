@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { buildOrderUrl, oneYearPrice, checkDomain, getTldPricing, parseKbTopics, KB_FALLBACK_TOPICS, getPopularKbTopics, parseTicketTypes, getSupportTicketTypes, SUPPORT_TICKET_TYPES_FALLBACK } from "@/lib/clientexec";
+import { buildOrderUrl, oneYearPrice, checkDomain, getTldPricing, parseKbTopics, KB_FALLBACK_TOPICS, getPopularKbTopics, parseTicketTypes, getSupportTicketTypes, SUPPORT_TICKET_TYPES_FALLBACK, isTicketSuccess, createSupportTicket } from "@/lib/clientexec";
 
 const AVAILABLE = {
   error: false, success: true,
@@ -360,5 +360,55 @@ describe("getSupportTicketTypes", () => {
   it("falls back when fetch throws", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network")));
     expect(await getSupportTicketTypes()).toEqual(SUPPORT_TICKET_TYPES_FALLBACK);
+  });
+});
+
+describe("isTicketSuccess", () => {
+  it("treats a redirect away from the ticket view as success", () => {
+    expect(isTicketSuccess(302, "index.php?fuse=support&view=ticketsubmitted", "")).toBe(true);
+  });
+  it("treats a bounce back to the submit-ticket view as failure", () => {
+    expect(isTicketSuccess(302, "index.php?fuse=support&controller=ticket&view=submitticket", "")).toBe(false);
+  });
+  it("treats a logout/login bounce as failure", () => {
+    expect(isTicketSuccess(302, "index.php?fuse=admin&action=Logout", "")).toBe(false);
+  });
+  it("treats a 200 with an error marker as failure", () => {
+    expect(isTicketSuccess(200, null, "There was an error, please try again")).toBe(false);
+  });
+});
+
+describe("createSupportTicket", () => {
+  it("GETs for a cookie then POSTs multipart, and maps success", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({ ok: true, status: 200, headers: { get: () => "CESESSION=abc; path=/" }, text: () => Promise.resolve("<form></form>") })
+      .mockResolvedValueOnce({ ok: false, status: 302, headers: { get: (h: string) => (h.toLowerCase() === "location" ? "index.php?fuse=support&view=ticketsubmitted" : null) }, text: () => Promise.resolve("") });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const ok = await createSupportTicket({ name: "Jane Baker", email: "jane@x.com", subject: "Hi", message: "Help", ticketType: "4" });
+
+    expect(ok).toBe(true);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    const [url, init] = fetchMock.mock.calls[1];
+    expect(String(url)).toContain("action=saveticket");
+    expect(init.method).toBe("POST");
+    expect(init.body).toBeInstanceOf(FormData);
+    expect((init.body as FormData).get("userid")).toBe("0");
+    expect((init.body as FormData).get("guestName")).toBe("Jane Baker");
+    expect((init.body as FormData).get("guestEmail")).toBe("jane@x.com");
+    expect((init.body as FormData).get("subject")).toBe("Hi");
+    expect((init.body as FormData).get("message")).toBe("Help");
+    expect((init.body as FormData).get("ticket-type")).toBe("4");
+    expect(init.headers.Cookie).toBe("CESESSION=abc");
+  });
+
+  it("returns false when CE bounces the POST to logout", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({ ok: true, status: 200, headers: { get: () => "" }, text: () => Promise.resolve("<form></form>") })
+      .mockResolvedValueOnce({ ok: false, status: 302, headers: { get: (h: string) => (h.toLowerCase() === "location" ? "index.php?fuse=admin&action=Logout" : null) }, text: () => Promise.resolve("") });
+    vi.stubGlobal("fetch", fetchMock);
+    expect(await createSupportTicket({ name: "A", email: "a@x.com", subject: "S", message: "M", ticketType: "3" })).toBe(false);
   });
 });

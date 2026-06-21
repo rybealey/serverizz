@@ -199,6 +199,58 @@ export async function getSupportTicketTypes(): Promise<TicketType[]> {
   }
 }
 
+/**
+ * Decide whether a saveticket POST succeeded, from the (redirect:"manual")
+ * response. Heuristic — isolated for tuning against the live instance:
+ *   - a 3xx redirect that does NOT go back to the submit-ticket view and is
+ *     NOT the logout/login bounce → success
+ *   - a 200 with an error marker → failure
+ *   - everything else → failure
+ */
+export function isTicketSuccess(status: number, location: string | null, body: string): boolean {
+  const isRedirect = status >= 300 && status < 400;
+  if (isRedirect) {
+    const loc = (location ?? "").toLowerCase();
+    if (!loc) return false;
+    if (loc.includes("view=submitticket")) return false;
+    if (loc.includes("action=logout") || loc.includes("action=login") || loc.includes("/login")) return false;
+    return true;
+  }
+  return false;
+}
+
+/** Submit a ClientExec guest support ticket. Throws if CE is unreachable. */
+export async function createSupportTicket(input: {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  ticketType: string;
+}): Promise<boolean> {
+  const formRes = await fetch(SUBMIT_TICKET_URL, { cache: "no-store" });
+  const setCookie = formRes.headers.get("set-cookie") ?? "";
+  const cookie = setCookie.split(";")[0];
+
+  const body = new FormData();
+  body.set("userid", "0");
+  body.set("guestName", input.name);
+  body.set("guestEmail", input.email);
+  body.set("subject", input.subject);
+  body.set("message", input.message);
+  body.set("ticket-type", input.ticketType);
+  body.set("validExtns", TICKET_VALID_EXTNS);
+
+  const res = await fetch(SAVE_TICKET_URL, {
+    method: "POST",
+    // No Content-Type: fetch sets the multipart boundary for FormData.
+    headers: { ...(cookie ? { Cookie: cookie } : {}) },
+    body,
+    redirect: "manual",
+    cache: "no-store",
+  });
+  return isTicketSuccess(res.status, res.headers.get("location"), await res.text());
+}
+
 // ---- Account creation (external registration form) ----
 // CE's external registration posts guestFirstName/guestLastName/guestEmail plus a
 // hidden sessionHash (a CSRF token tied to a CE PHP session). We GET the form page
