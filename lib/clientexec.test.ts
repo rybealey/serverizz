@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { buildOrderUrl, oneYearPrice, checkDomain, getTldPricing, parseKbTopics, KB_FALLBACK_TOPICS, getPopularKbTopics } from "@/lib/clientexec";
+import { buildOrderUrl, oneYearPrice, checkDomain, getTldPricing, parseKbTopics, KB_FALLBACK_TOPICS, getPopularKbTopics, parseTicketTypes, getSupportTicketTypes, SUPPORT_TICKET_TYPES_FALLBACK } from "@/lib/clientexec";
 
 const AVAILABLE = {
   error: false, success: true,
@@ -312,5 +312,53 @@ describe("getPopularKbTopics", () => {
   it("falls back when fetch rejects", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network")));
     expect(await getPopularKbTopics()).toEqual(KB_FALLBACK_TOPICS);
+  });
+});
+
+const TICKET_FORM_HTML = `
+<form id="support-ticket-form">
+  <select name="ticket-type" class="drop-ticket-type form-control searchSelect2">
+    <option value="0" >Select below ...</option>
+    <option value="3" >Plan &amp; Pricing Questions</option>
+    <option value="4" >Pre-sales Technical Question</option>
+    <option value="13" >Network Abuse</option>
+  </select>
+</form>`;
+
+describe("parseTicketTypes", () => {
+  it("parses options, excludes the placeholder, decodes entities", () => {
+    const types = parseTicketTypes(TICKET_FORM_HTML);
+    expect(types).toEqual([
+      { value: "3", label: "Plan & Pricing Questions" },
+      { value: "4", label: "Pre-sales Technical Question" },
+      { value: "13", label: "Network Abuse" },
+    ]);
+  });
+
+  it("returns [] when the select is absent", () => {
+    expect(parseTicketTypes("<form>no select here</form>")).toEqual([]);
+  });
+});
+
+describe("getSupportTicketTypes", () => {
+  it("returns parsed types on success", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, status: 200, text: () => Promise.resolve(TICKET_FORM_HTML) }));
+    const types = await getSupportTicketTypes();
+    expect(types.map((t) => t.value)).toEqual(["3", "4", "13"]);
+  });
+
+  it("falls back when the response is not ok", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 500, text: () => Promise.resolve("") }));
+    expect(await getSupportTicketTypes()).toEqual(SUPPORT_TICKET_TYPES_FALLBACK);
+  });
+
+  it("falls back when parsing yields nothing", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, status: 200, text: () => Promise.resolve("<p>nope</p>") }));
+    expect(await getSupportTicketTypes()).toEqual(SUPPORT_TICKET_TYPES_FALLBACK);
+  });
+
+  it("falls back when fetch throws", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network")));
+    expect(await getSupportTicketTypes()).toEqual(SUPPORT_TICKET_TYPES_FALLBACK);
   });
 });
