@@ -128,6 +128,7 @@ export function SupportForm({
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         <span style={{ fontFamily: "var(--font-body)", fontSize: 13, fontWeight: 500, color: light }}>Message</span>
         <textarea
+          aria-label="Message"
           placeholder="Tell us what's up…"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
