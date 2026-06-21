@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LEGAL_DOCS } from "./legal";
 
 /**
  * Central SEO configuration for SERVERIZZ.
@@ -54,6 +55,12 @@ export const ROUTES: {
   { path: "/domains", name: "Domains", changeFrequency: "monthly", priority: 0.8 },
   { path: "/why", name: "Why SERVERIZZ", changeFrequency: "monthly", priority: 0.7 },
   { path: "/support", name: "Support", changeFrequency: "monthly", priority: 0.6 },
+  ...LEGAL_DOCS.map((doc) => ({
+    path: `/legal/${doc.slug}`,
+    name: doc.title,
+    changeFrequency: "yearly" as const,
+    priority: 0.3,
+  })),
 ];
 
 /**

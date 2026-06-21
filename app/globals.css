@@ -382,6 +382,8 @@ html[data-theme="light"] .szz-term {
   transition: color var(--duration-fast) var(--ease-standard);
 }
 .szz-foot-link:hover { color: var(--szz-text-primary); }
+/* Inline variant used in the copyright strip (Privacy · Terms · AUP). */
+.szz-foot-link--inline { display: inline; font-size: 12px; }
 .szz-link-accent {
   background: none;
   border: none;
@@ -413,4 +415,90 @@ html[data-theme="light"] .szz-term {
   .szz-login-aside {
     display: none !important;
   }
+}
+
+/* ---------- Legal pages (/legal/[slug]) ---------- */
+.szz-legal-band { padding: 64px 48px 40px; }
+.szz-legal-body { padding: 48px 48px 90px; }
+@media (max-width: 720px) {
+  .szz-legal-band { padding: 48px 18px 28px; }
+  .szz-legal-body { padding: 32px 18px 64px; }
+}
+
+/* Document switcher pills */
+.szz-legal-tab {
+  border: 1px solid var(--szz-border);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--szz-text-muted);
+  background: transparent;
+  transition: color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    background var(--duration-fast) var(--ease-standard);
+}
+.szz-legal-tab:hover { color: var(--szz-text-primary); border-color: var(--szz-text-faint); }
+.szz-legal-tab[data-active="true"] {
+  background: var(--szz-cta-blue);
+  border-color: var(--szz-cta-blue);
+  color: #fff;
+}
+
+/*
+ * Themed GetTerms document body. GetTerms injects its own base stylesheet at
+ * runtime (after this file), so we double the class in each selector to outrank
+ * its `.getterms-document-embed[data-getterms-styles]` rules on a specificity
+ * tie rather than relying on source order.
+ */
+.szz-getterms.getterms-document-embed[data-getterms-styles] {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--szz-text-muted);
+}
+.szz-getterms.getterms-document-embed[data-getterms-styles] h1,
+.szz-getterms.getterms-document-embed[data-getterms-styles] h2,
+.szz-getterms.getterms-document-embed[data-getterms-styles] h3,
+.szz-getterms.getterms-document-embed[data-getterms-styles] h4,
+.szz-getterms.getterms-document-embed[data-getterms-styles] h5,
+.szz-getterms.getterms-document-embed[data-getterms-styles] h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+  color: var(--szz-text-primary);
+}
+.szz-getterms.getterms-document-embed[data-getterms-styles] h1 { font-size: 28px; margin: 0 0 16px; }
+.szz-getterms.getterms-document-embed[data-getterms-styles] h2 { font-size: 22px; margin: 36px 0 14px; }
+.szz-getterms.getterms-document-embed[data-getterms-styles] h3 { font-size: 18px; margin: 28px 0 12px; }
+.szz-getterms.getterms-document-embed[data-getterms-styles] h4,
+.szz-getterms.getterms-document-embed[data-getterms-styles] h5,
+.szz-getterms.getterms-document-embed[data-getterms-styles] h6 { font-size: 16px; margin: 22px 0 10px; }
+.szz-getterms.getterms-document-embed[data-getterms-styles] p { margin: 0 0 14px; }
+.szz-getterms.getterms-document-embed[data-getterms-styles] strong { color: var(--szz-text-light); font-weight: 700; }
+.szz-getterms.getterms-document-embed[data-getterms-styles] a { color: var(--szz-accent-blue); }
+.szz-getterms.getterms-document-embed[data-getterms-styles] a:hover { color: var(--szz-text-primary); }
+.szz-getterms.getterms-document-embed[data-getterms-styles] ul,
+.szz-getterms.getterms-document-embed[data-getterms-styles] ol { margin: 0 0 14px; padding-left: 1.25em; }
+.szz-getterms.getterms-document-embed[data-getterms-styles] ul { list-style: disc; }
+.szz-getterms.getterms-document-embed[data-getterms-styles] ol { list-style: decimal; }
+.szz-getterms.getterms-document-embed[data-getterms-styles] li { margin: 6px 0; }
+.szz-getterms.getterms-document-embed[data-getterms-styles] hr {
+  border: none;
+  border-top: 1px solid var(--szz-border);
+  margin: 28px 0;
+}
+.szz-getterms.getterms-document-embed[data-getterms-styles] table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 16px;
+  font-size: 14px;
+}
+.szz-getterms.getterms-document-embed[data-getterms-styles] th,
+.szz-getterms.getterms-document-embed[data-getterms-styles] td {
+  border: 1px solid var(--szz-border);
+  padding: 8px 12px;
+  text-align: left;
 }

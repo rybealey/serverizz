@@ -2,6 +2,7 @@ import * as React from "react";
 import Link from "next/link";
 import { TerminalLogo } from "@/components/szz/terminal-logo";
 import { PaymentMarks } from "@/components/szz/payment-marks";
+import { LEGAL_DOCS } from "@/lib/legal";
 
 const COLUMNS: { heading: string; links: { label: string; href: string }[] }[] = [
   {
@@ -27,6 +28,13 @@ const COLUMNS: { heading: string; links: { label: string; href: string }[] }[] =
       { label: "Status", href: "/support" },
       { label: "Contact", href: "/support" },
     ],
+  },
+  {
+    heading: "LEGAL",
+    links: LEGAL_DOCS.map((doc) => ({
+      label: doc.label,
+      href: `/legal/${doc.slug}`,
+    })),
   },
 ];
 
@@ -105,7 +113,21 @@ export function SiteFooter() {
         }}
       >
         <span style={{ fontSize: 12, color: "var(--szz-text-dim)" }}>
-          © 2026 Rizz Enterprises, LLC. Privacy · Terms · AUP
+          © 2026 Rizz Enterprises, LLC.{" "}
+          <Link href="/legal/privacy" className="szz-foot-link szz-foot-link--inline">
+            Privacy
+          </Link>{" "}
+          ·{" "}
+          <Link href="/legal/terms" className="szz-foot-link szz-foot-link--inline">
+            Terms
+          </Link>{" "}
+          ·{" "}
+          <Link
+            href="/legal/acceptable-use"
+            className="szz-foot-link szz-foot-link--inline"
+          >
+            AUP
+          </Link>
         </span>
         <PaymentMarks />
       </div>
