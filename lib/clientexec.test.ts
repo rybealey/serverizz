@@ -365,16 +365,16 @@ describe("getSupportTicketTypes", () => {
 
 describe("isTicketSuccess", () => {
   it("treats a redirect away from the ticket view as success", () => {
-    expect(isTicketSuccess(302, "index.php?fuse=support&view=ticketsubmitted", "")).toBe(true);
+    expect(isTicketSuccess(302, "index.php?fuse=support&view=ticketsubmitted")).toBe(true);
   });
   it("treats a bounce back to the submit-ticket view as failure", () => {
-    expect(isTicketSuccess(302, "index.php?fuse=support&controller=ticket&view=submitticket", "")).toBe(false);
+    expect(isTicketSuccess(302, "index.php?fuse=support&controller=ticket&view=submitticket")).toBe(false);
   });
   it("treats a logout/login bounce as failure", () => {
-    expect(isTicketSuccess(302, "index.php?fuse=admin&action=Logout", "")).toBe(false);
+    expect(isTicketSuccess(302, "index.php?fuse=admin&action=Logout")).toBe(false);
   });
   it("treats a 200 with an error marker as failure", () => {
-    expect(isTicketSuccess(200, null, "There was an error, please try again")).toBe(false);
+    expect(isTicketSuccess(200, null)).toBe(false);
   });
 });
 

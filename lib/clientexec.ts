@@ -207,10 +207,8 @@ export async function getSupportTicketTypes(): Promise<TicketType[]> {
  *   - a non-3xx response (200/4xx/5xx) → failure
  *   - everything else → failure
  *
- * Note: the `body` parameter is currently unused; it is kept for symmetry with
- * the sibling `isRegisterSuccess` signature and reserved for future tuning.
  */
-export function isTicketSuccess(status: number, location: string | null, body: string): boolean {
+export function isTicketSuccess(status: number, location: string | null): boolean {
   const isRedirect = status >= 300 && status < 400;
   if (isRedirect) {
     const loc = (location ?? "").toLowerCase();
@@ -252,7 +250,7 @@ export async function createSupportTicket(input: {
     redirect: "manual",
     cache: "no-store",
   });
-  return isTicketSuccess(res.status, res.headers.get("location"), await res.text());
+  return isTicketSuccess(res.status, res.headers.get("location"));
 }
 
 // ---- Account creation (external registration form) ----

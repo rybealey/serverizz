@@ -86,7 +86,7 @@ export function SupportForm({
         </span>
         <h2 style={{ margin: 0, fontFamily: display, fontSize: 22, fontWeight: 700, color: primary }}>Ticket received</h2>
         <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "var(--szz-text-muted)" }}>
-          Thanks — we've logged your ticket and emailed you a confirmation. We'll reply by email shortly.
+          Thanks — we&apos;ve logged your ticket and emailed you a confirmation. We&apos;ll reply by email shortly.
         </p>
       </div>
     );
