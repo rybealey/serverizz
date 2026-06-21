@@ -165,6 +165,10 @@ describe("parseSessionHash", () => {
     const html = `<input value="zzz999" name="sessionHash" type="hidden">`;
     expect(parseSessionHash(html)).toBe("zzz999");
   });
+  it("reads the sessionHash from a JS variable (ticket form)", () => {
+    const html = `<script>var sessionHash = "deafb7a2";</script>`;
+    expect(parseSessionHash(html)).toBe("deafb7a2");
+  });
   it("returns null when absent", () => {
     expect(parseSessionHash(`<form></form>`)).toBeNull();
   });
@@ -367,6 +371,9 @@ describe("isTicketSuccess", () => {
   it("treats a redirect away from the ticket view as success", () => {
     expect(isTicketSuccess(302, "index.php?fuse=support&view=ticketsubmitted")).toBe(true);
   });
+  it("treats the bare index.php redirect (live success) as success", () => {
+    expect(isTicketSuccess(302, "index.php")).toBe(true);
+  });
   it("treats a bounce back to the submit-ticket view as failure", () => {
     expect(isTicketSuccess(302, "index.php?fuse=support&controller=ticket&view=submitticket")).toBe(false);
   });
@@ -382,8 +389,8 @@ describe("createSupportTicket", () => {
   it("GETs for a cookie then POSTs multipart, and maps success", async () => {
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce({ ok: true, status: 200, headers: { get: () => "CESESSION=abc; path=/" }, text: () => Promise.resolve("<form></form>") })
-      .mockResolvedValueOnce({ ok: false, status: 302, headers: { get: (h: string) => (h.toLowerCase() === "location" ? "index.php?fuse=support&view=ticketsubmitted" : null) }, text: () => Promise.resolve("") });
+      .mockResolvedValueOnce({ ok: true, status: 200, headers: { get: () => "CESESSION=abc; path=/" }, text: () => Promise.resolve(`<script>var sessionHash = "h-77";</script>`) })
+      .mockResolvedValueOnce({ ok: false, status: 302, headers: { get: (h: string) => (h.toLowerCase() === "location" ? "index.php" : null) }, text: () => Promise.resolve("") });
     vi.stubGlobal("fetch", fetchMock);
 
     const ok = await createSupportTicket({ name: "Jane Baker", email: "jane@x.com", subject: "Hi", message: "Help", ticketType: "4" });
@@ -400,6 +407,7 @@ describe("createSupportTicket", () => {
     expect((init.body as FormData).get("subject")).toBe("Hi");
     expect((init.body as FormData).get("message")).toBe("Help");
     expect((init.body as FormData).get("ticket-type")).toBe("4");
+    expect((init.body as FormData).get("sessionHash")).toBe("h-77");
     expect(init.headers.Cookie).toBe("CESESSION=abc");
   });
 

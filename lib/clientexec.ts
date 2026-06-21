@@ -230,6 +230,9 @@ export async function createSupportTicket(input: {
   if (!formRes.ok) throw new Error(`ClientExec HTTP ${formRes.status}`);
   const setCookie = formRes.headers.get("set-cookie") ?? "";
   const cookie = setCookie.split(";")[0];
+  // saveticket validates a per-session sessionHash CSRF token; without it CE
+  // bounces the POST to logout. On the ticket page it lives only in a JS var.
+  const sessionHash = parseSessionHash(await formRes.text()) ?? "";
 
   const body = new FormData();
   body.set("userid", "0");
@@ -239,6 +242,7 @@ export async function createSupportTicket(input: {
   body.set("message", input.message);
   body.set("ticket-type", input.ticketType);
   body.set("validExtns", TICKET_VALID_EXTNS);
+  body.set("sessionHash", sessionHash);
 
   const res = await fetch(SAVE_TICKET_URL, {
     method: "POST",
@@ -266,11 +270,17 @@ export function buildCreateAccountUrl(): string {
   return `${CE_URL}/index.php?fuse=home&action=createaccount`;
 }
 
-/** Extract the sessionHash hidden-field value from CE's registration form HTML. */
+/**
+ * Extract the sessionHash CSRF token from a CE page. The registration form
+ * carries it as a hidden input; the guest ticket form carries it only as a JS
+ * variable (`sessionHash = "..."`). Try the hidden-field forms first, then the
+ * JS-variable form.
+ */
 export function parseSessionHash(html: string): string | null {
   const m =
     html.match(/name=["']sessionHash["'][^>]*\bvalue=["']([^"']*)["']/i) ??
-    html.match(/\bvalue=["']([^"']*)["'][^>]*name=["']sessionHash["']/i);
+    html.match(/\bvalue=["']([^"']*)["'][^>]*name=["']sessionHash["']/i) ??
+    html.match(/sessionHash\s*=\s*["']([^"']+)["']/i);
   return m ? m[1] : null;
 }
 
