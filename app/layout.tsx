@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Sora, Inter, JetBrains_Mono } from "next/font/google";
 import { OrganizationJsonLd, JsonLdScript } from "next-seo";
 import { config } from "@fortawesome/fontawesome-svg-core";
@@ -40,6 +41,14 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 const DEFAULT_TITLE = `${SITE_NAME} — ${SITE_TAGLINE}`;
+
+// GetTerms cookie consent manager (CMP). The blocker prevents tracking
+// scripts/cookies from firing before consent and must run as early as
+// possible — hence `beforeInteractive`, which Next.js injects into <head>
+// (and preloads) before any first-party code. The widget renders the
+// consent banner and can load right after hydration.
+const GETTERMS_CMP_ID = "4d1d0abc-c6b5-4484-8b72-bf097c928e44";
+const GETTERMS_BASE = `https://gettermscmp.com/cookie-consent`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -99,6 +108,11 @@ export default function RootLayout({
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <Script
+          id="getterms-cmp-blocker"
+          src={`${GETTERMS_BASE}/blocker/${GETTERMS_CMP_ID}/en-us?auto=true`}
+          strategy="beforeInteractive"
+        />
       </head>
       <body>
         <OrganizationJsonLd
@@ -131,6 +145,11 @@ export default function RootLayout({
         />
         {children}
         <AffiliateTracker />
+        <Script
+          id="getterms-cmp-widget"
+          src={`${GETTERMS_BASE}/widget/${GETTERMS_CMP_ID}/en-us?auto=true`}
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
