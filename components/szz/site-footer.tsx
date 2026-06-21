@@ -113,21 +113,7 @@ export function SiteFooter() {
         }}
       >
         <span style={{ fontSize: 12, color: "var(--szz-text-dim)" }}>
-          © 2026 Rizz Enterprises, LLC.{" "}
-          <Link href="/legal/privacy" className="szz-foot-link szz-foot-link--inline">
-            Privacy
-          </Link>{" "}
-          ·{" "}
-          <Link href="/legal/terms" className="szz-foot-link szz-foot-link--inline">
-            Terms
-          </Link>{" "}
-          ·{" "}
-          <Link
-            href="/legal/acceptable-use"
-            className="szz-foot-link szz-foot-link--inline"
-          >
-            AUP
-          </Link>
+          © 2026 Rizz Enterprises, LLC.
         </span>
         <PaymentMarks />
       </div>
