@@ -11,6 +11,7 @@ import {
 import { BreadcrumbJsonLd } from "next-seo";
 import { SectionEyebrow } from "@/components/szz/section-eyebrow";
 import { Terminal } from "@/components/szz/terminal";
+import { WpPricingCard } from "@/components/szz/wp-pricing-card";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { wpLines } from "@/lib/szz-data";
@@ -79,44 +80,7 @@ export default function WordPressPage() {
           </div>
         </div>
 
-        <Card glow>
-          <div style={{ display: "flex", flexDirection: "column", gap: 14, height: "100%" }}>
-            <span style={{ fontSize: 13, color: muted }}>Starts at</span>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
-              <span style={{ fontFamily: display, fontSize: 44, fontWeight: 700, color: primary }}>$15</span>
-              <span style={{ fontSize: 15, color: "var(--szz-text-dim)" }}>/mo</span>
-            </div>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--szz-text-dim)", marginTop: -6 }}>
-              billed annually · 30-day refund
-            </span>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10, margin: "6px 0" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 14, color: muted }}>
-                <span>Plan</span>
-                <span style={{ display: "inline-flex", alignItems: "center", gap: 6, border: "1px solid var(--szz-border)", borderRadius: 8, padding: "6px 12px", color: primary }}>
-                  Entrepreneur <span style={{ color: "var(--szz-text-dim)" }}>▾</span>
-                </span>
-              </div>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, color: muted }}>
-                <span>Sites</span>
-                <span style={{ color: light }}>up to 4</span>
-              </div>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, color: muted }}>
-                <span>Storage</span>
-                <span style={{ color: light }}>25 GB SSD</span>
-              </div>
-            </div>
-            <Button asChild variant="primary" size="lg" style={{ width: "100%" }}>
-              <Link href="/support">Get started</Link>
-            </Button>
-            <span style={{ textAlign: "center", fontSize: 13, color: muted }}>
-              or{" "}
-              <Link href="/support" className="szz-link-accent" style={{ fontSize: 13, color: "var(--szz-accent-blue)" }}>
-                talk to our team
-              </Link>{" "}
-              first
-            </span>
-          </div>
-        </Card>
+        <WpPricingCard />
       </section>
 
       {/* what's included */}
