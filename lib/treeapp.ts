@@ -48,7 +48,8 @@ export function parseImpact(data: SummaryResponse | null | undefined): ImpactSum
   return {
     trees: num(data.trees) + num(data.unbilled?.trees),
     carbonCredits: num(data.carbon_credits),
-    co2Tonnes: num(data.carbon_dioxide_absorbed),
+    // The API reports CO2 in kilograms; the badge displays tonnes.
+    co2Tonnes: num(data.carbon_dioxide_absorbed) / 1000,
     landSqMeters: num(data.land_restored),
     workdays: num(data.workdays_created),
   };

@@ -1,16 +1,9 @@
 import * as React from "react";
 import Link from "next/link";
-import { Sprout, BadgeCheck, Cloud, Trees, Briefcase, type LucideIcon } from "lucide-react";
 import { TerminalLogo } from "@/components/szz/terminal-logo";
 import { PaymentMarks } from "@/components/szz/payment-marks";
+import { ImpactBadges } from "@/components/szz/impact-badges";
 import { LEGAL_DOCS } from "@/lib/legal";
-import {
-  getImpactSummary,
-  formatCount,
-  formatTonnes,
-  formatSqMeters,
-  type ImpactSummary,
-} from "@/lib/treeapp";
 
 const COLUMNS: { heading: string; links: { label: string; href: string }[] }[] = [
   {
@@ -46,18 +39,7 @@ const COLUMNS: { heading: string; links: { label: string; href: string }[] }[] =
   },
 ];
 
-// "Our impact" footer badges, sourced from The Tree App summary. Each maps an icon
-// and label to a formatted value from the normalized ImpactSummary.
-const IMPACT_BADGES: { icon: LucideIcon; label: string; value: (i: ImpactSummary) => string }[] = [
-  { icon: Sprout, label: "trees planted", value: (i) => formatCount(i.trees) },
-  { icon: BadgeCheck, label: "carbon credits", value: (i) => formatCount(i.carbonCredits) },
-  { icon: Cloud, label: "CO₂ absorbed", value: (i) => formatTonnes(i.co2Tonnes) },
-  { icon: Trees, label: "land restored", value: (i) => formatSqMeters(i.landSqMeters) },
-  { icon: Briefcase, label: "workdays created", value: (i) => formatCount(i.workdays) },
-];
-
-export async function SiteFooter() {
-  const impact = await getImpactSummary();
+export function SiteFooter() {
   return (
     <footer
       style={{
@@ -120,43 +102,7 @@ export async function SiteFooter() {
         </div>
       </div>
 
-      <div style={{ maxWidth: 1180, margin: "44px auto 0", display: "flex", flexDirection: "column", gap: 12 }}>
-        <span
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: 10,
-            fontWeight: 700,
-            letterSpacing: 2,
-            color: "var(--szz-green)",
-          }}
-        >
-          {"// OUR_IMPACT"}
-        </span>
-        <div style={{ maxWidth: 560, display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {IMPACT_BADGES.map(({ icon: Icon, label, value }) => (
-            <div
-              key={label}
-              title={`${value(impact)} ${label} through The Tree App`}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 8,
-                whiteSpace: "nowrap",
-                border: "1px solid color-mix(in srgb, var(--szz-green) 35%, transparent)",
-                borderRadius: 999,
-                background: "color-mix(in srgb, var(--szz-green) 9%, transparent)",
-                padding: "5px 12px 5px 10px",
-              }}
-            >
-              <Icon size={14} aria-hidden style={{ flexShrink: 0, color: "var(--szz-green)" }} />
-              <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, fontWeight: 700, color: "var(--szz-green)" }}>
-                {value(impact)}
-              </span>
-              <span style={{ fontSize: 12, color: "var(--szz-text-muted)" }}>{label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
+      <ImpactBadges />
 
       <div style={{ maxWidth: 1180, margin: "40px auto 0", height: 1, background: "var(--szz-border)" }} />
       <div

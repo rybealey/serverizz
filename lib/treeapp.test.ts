@@ -11,7 +11,7 @@ import {
 const FULL = {
   trees: 100,
   carbon_credits: 48,
-  carbon_dioxide_absorbed: 12.4,
+  carbon_dioxide_absorbed: 12400, // kilograms -> 12.4 tonnes
   land_restored: 9000,
   workdays_created: 73,
   unbilled: { trees: 16, carbon_credits: 2 },
