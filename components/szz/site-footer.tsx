@@ -5,19 +5,22 @@ import { PaymentMarks } from "@/components/szz/payment-marks";
 import { ImpactBadges } from "@/components/szz/impact-badges";
 import { LEGAL_DOCS } from "@/lib/legal";
 
-const COLUMNS: { heading: string; links: { label: string; href: string }[] }[] = [
+const COLUMNS: {
+  heading: string;
+  links: { label: string; href: string; external?: boolean; indent?: boolean }[];
+}[] = [
   {
     heading: "PRODUCTS",
     links: [
-      { label: "Web Hosting", href: "/hosting" },
-      { label: "WordPress", href: "/wordpress" },
+      { label: "Hosting", href: "/hosting" },
+      { label: "WordPress", href: "/hosting/wordpress", indent: true },
       { label: "Domains", href: "/domains" },
     ],
   },
   {
     heading: "COMPANY",
     links: [
-      { label: "Why us", href: "/why" },
+      { label: "Why Us", href: "/why" },
       { label: "About", href: "/support" },
       { label: "Blog", href: "/support" },
     ],
@@ -25,8 +28,8 @@ const COLUMNS: { heading: string; links: { label: string; href: string }[] }[] =
   {
     heading: "SUPPORT",
     links: [
-      { label: "Help center", href: "/support" },
-      { label: "Status", href: "/support" },
+      { label: "Help Center", href: "/support" },
+      { label: "Status", href: "https://status.serverizz.com", external: true },
       { label: "Contact", href: "/support" },
     ],
   },
@@ -93,7 +96,15 @@ export function SiteFooter() {
                 {col.heading}
               </span>
               {col.links.map((link, i) => (
-                <Link key={`${link.label}-${i}`} href={link.href} className="szz-foot-link">
+                <Link
+                  key={`${link.label}-${i}`}
+                  href={link.href}
+                  className="szz-foot-link"
+                  style={link.indent ? { paddingLeft: 12 } : undefined}
+                  {...(link.external
+                    ? { target: "_blank", rel: "noopener noreferrer" }
+                    : {})}
+                >
                   {link.label}
                 </Link>
               ))}

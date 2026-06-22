@@ -51,7 +51,7 @@ export const ROUTES: {
 }[] = [
   { path: "/", name: "Home", changeFrequency: "weekly", priority: 1 },
   { path: "/hosting", name: "Hosting plans", changeFrequency: "monthly", priority: 0.9 },
-  { path: "/wordpress", name: "Managed WordPress hosting", changeFrequency: "monthly", priority: 0.9 },
+  { path: "/hosting/wordpress", name: "Managed WordPress hosting", changeFrequency: "monthly", priority: 0.9 },
   { path: "/domains", name: "Domains", changeFrequency: "monthly", priority: 0.8 },
   { path: "/why", name: "Why SERVERIZZ", changeFrequency: "monthly", priority: 0.7 },
   { path: "/support", name: "Support", changeFrequency: "monthly", priority: 0.6 },

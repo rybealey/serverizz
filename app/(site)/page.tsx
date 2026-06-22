@@ -25,7 +25,7 @@ const products = [
     priceColor: "var(--szz-accent-blue)",
   },
   {
-    href: "/wordpress",
+    href: "/hosting/wordpress",
     Icon: LayoutTemplate,
     iconColor: "var(--szz-accent-blue)",
     title: "WordPress",

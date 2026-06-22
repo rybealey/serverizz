@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ChevronDown } from "lucide-react";
 import { TerminalLogo } from "@/components/szz/terminal-logo";
 import { ThemeToggle } from "@/components/szz/theme-toggle";
 import { Button } from "@/components/ui/button";
@@ -33,9 +34,18 @@ function useMaintenanceStatus(): MaintenanceState {
   return state;
 }
 
-const NAV_LINKS = [
-  { href: "/hosting", label: "Hosting" },
-  { href: "/wordpress", label: "WordPress" },
+type NavItem = { href: string; label: string };
+type NavGroup = { label: string; items: NavItem[] };
+type NavEntry = NavItem | NavGroup;
+
+const NAV_LINKS: NavEntry[] = [
+  {
+    label: "Hosting",
+    items: [
+      { href: "/hosting", label: "Hosting" },
+      { href: "/hosting/wordpress", label: "WordPress" },
+    ],
+  },
   { href: "/domains", label: "Domains" },
   { href: "/support", label: "Support" },
 ];
@@ -77,6 +87,117 @@ function NavLink({
         />
       )}
     </Link>
+  );
+}
+
+function NavDropdown({
+  label,
+  items,
+  pathname,
+}: {
+  label: string;
+  items: NavItem[];
+  pathname: string;
+}) {
+  const [open, setOpen] = React.useState(false);
+  const groupActive = items.some((it) => pathname.startsWith(it.href));
+
+  return (
+    <div
+      style={{ position: "relative", display: "flex" }}
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) setOpen(false);
+      }}
+    >
+      <button
+        type="button"
+        className="szz-nav-link"
+        data-active={groupActive}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+        style={{
+          position: "relative",
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 4,
+          background: "transparent",
+          border: "none",
+          cursor: "pointer",
+          fontFamily: "var(--font-body)",
+          fontSize: 14,
+          fontWeight: 500,
+          color: groupActive ? "var(--szz-text-primary)" : "var(--szz-text-muted)",
+          padding: "8px 12px",
+        }}
+      >
+        {label}
+        <ChevronDown
+          size={14}
+          style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform .15s ease" }}
+        />
+        {groupActive && (
+          <span
+            style={{
+              position: "absolute",
+              left: 12,
+              right: 12,
+              bottom: 0,
+              height: 2,
+              background: "var(--szz-accent-blue)",
+            }}
+          />
+        )}
+      </button>
+
+      {open && (
+        <div
+          role="menu"
+          style={{ position: "absolute", top: "100%", left: 0, paddingTop: 6, zIndex: 60 }}
+        >
+          <div
+            style={{
+              minWidth: 180,
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+              padding: 6,
+              borderRadius: 10,
+              background: "var(--szz-bg-card)",
+              border: "1px solid var(--szz-border-subtle)",
+              boxShadow: "0 12px 32px rgba(0,0,0,.18)",
+            }}
+          >
+            {items.map((it) => {
+              const active =
+                it.href === "/hosting" ? pathname === "/hosting" : pathname.startsWith(it.href);
+              return (
+                <Link
+                  key={it.href}
+                  href={it.href}
+                  role="menuitem"
+                  className="szz-nav-link"
+                  data-active={active}
+                  onClick={() => setOpen(false)}
+                  style={{
+                    fontFamily: "var(--font-body)",
+                    fontSize: 14,
+                    fontWeight: 500,
+                    color: active ? "var(--szz-text-primary)" : "var(--szz-text-muted)",
+                    padding: "8px 10px",
+                    borderRadius: 6,
+                  }}
+                >
+                  {it.label}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -165,19 +286,28 @@ export function SiteNav() {
           <TerminalLogo size={24} />
         </Link>
 
-        <div style={{ display: "flex", gap: 4 }}>
-          {NAV_LINKS.map((link) => (
-            <NavLink
-              key={link.href}
-              href={link.href}
-              label={link.label}
-              active={
-                link.href === "/"
-                  ? pathname === "/"
-                  : pathname.startsWith(link.href)
-              }
-            />
-          ))}
+        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          {NAV_LINKS.map((link) =>
+            "items" in link ? (
+              <NavDropdown
+                key={link.label}
+                label={link.label}
+                items={link.items}
+                pathname={pathname}
+              />
+            ) : (
+              <NavLink
+                key={link.href}
+                href={link.href}
+                label={link.label}
+                active={
+                  link.href === "/"
+                    ? pathname === "/"
+                    : pathname.startsWith(link.href)
+                }
+              />
+            )
+          )}
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>

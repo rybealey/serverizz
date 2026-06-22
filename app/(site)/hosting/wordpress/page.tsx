@@ -21,7 +21,7 @@ export const metadata: Metadata = pageMetadata({
   title: "Managed WordPress hosting",
   description:
     "WordPress that updates, backs up and secures itself. Core and plugin updates, malware scanning, caching and daily backups — all handled for you.",
-  path: "/wordpress",
+  path: "/hosting/wordpress",
 });
 
 const display = "var(--font-heading)";
@@ -51,7 +51,7 @@ const specs = [
 export default function WordPressPage() {
   return (
     <div style={{ maxWidth: 1180, margin: "0 auto", padding: "48px 24px 0" }}>
-      <BreadcrumbJsonLd items={breadcrumbTrail("Managed WordPress hosting", "/wordpress")} />
+      <BreadcrumbJsonLd items={breadcrumbTrail("Managed WordPress hosting", "/hosting/wordpress")} />
       {/* breadcrumb */}
       <div style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--szz-text-dim)", marginBottom: 24 }}>
         <Link href="/hosting" className="szz-link-accent" style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--szz-text-dim)" }}>
