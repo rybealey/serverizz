@@ -1,16 +1,11 @@
 import type { Metadata } from "next";
-import { BreadcrumbJsonLd } from "next-seo";
+import { BreadcrumbJsonLd, JsonLdScript } from "next-seo";
 import { SectionEyebrow } from "@/components/szz/section-eyebrow";
 import { Card } from "@/components/ui/card";
 import { PlanPricing } from "@/components/szz/plan-pricing";
-import { breadcrumbTrail, pageMetadata } from "@/lib/seo";
+import { breadcrumbTrail, pageMetadataFor, serviceJsonLd } from "@/lib/seo";
 
-export const metadata: Metadata = pageMetadata({
-  title: "Hosting plans",
-  description:
-    "Two fully-managed hosting plans — Entrepreneur and Engineer. Free migration, SSL, daily backups and a dedicated account manager as standard.",
-  path: "/hosting",
-});
+export const metadata: Metadata = pageMetadataFor("/hosting");
 
 const display = "var(--font-heading)";
 const muted = "var(--szz-text-muted)";
@@ -94,6 +89,11 @@ export default function HostingPage() {
   return (
     <div>
       <BreadcrumbJsonLd items={breadcrumbTrail("Hosting plans", "/hosting")} />
+      <JsonLdScript
+        id="hosting-service-jsonld"
+        scriptKey="hosting-service-jsonld"
+        data={serviceJsonLd("/hosting")}
+      />
       {/* hero */}
       <section
         style={{
@@ -107,13 +107,16 @@ export default function HostingPage() {
           margin: "0 auto",
         }}
       >
-        <SectionEyebrow>Plans</SectionEyebrow>
+        <SectionEyebrow>Secure cPanel Hosting</SectionEyebrow>
         <h1 style={{ margin: 0, fontFamily: display, fontSize: "clamp(32px, 6vw, 48px)", fontWeight: 700, lineHeight: 1.08, letterSpacing: "-1.5px", color: primary }}>
           Pick a plan. Change it whenever.
         </h1>
         <p style={{ margin: 0, fontSize: 17, lineHeight: 1.6, color: muted }}>
           Both plans are fully managed — free migration, SSL, daily backups and a dedicated account
           manager included as standard.
+        </p>
+        <p style={{ margin: 0, fontFamily: "var(--font-mono)", fontSize: 13, color: "var(--szz-text-dim)" }}>
+          Built on CloudLinux + Imunify360, served from our Miami datacenter for low-latency reach across the US &amp; Latin America.
         </p>
       </section>
 
