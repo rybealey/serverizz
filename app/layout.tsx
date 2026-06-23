@@ -51,6 +51,12 @@ const DEFAULT_TITLE = `${SITE_NAME} — ${SITE_TAGLINE}`;
 const GETTERMS_CMP_ID = "4d1d0abc-c6b5-4484-8b72-bf097c928e44";
 const GETTERMS_BASE = `https://gettermscmp.com/cookie-consent`;
 
+// Google Analytics 4 (gtag.js). Loaded `afterInteractive` so it never blocks
+// first paint. The GetTerms CMP blocker above (beforeInteractive, auto=true)
+// recognizes the googletagmanager.com loader and holds it until the visitor
+// consents, so no analytics cookies/requests fire pre-consent.
+const GA_MEASUREMENT_ID = "G-804JZC0GTF";
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
@@ -156,6 +162,17 @@ export default function RootLayout({
           src={`${GETTERMS_BASE}/widget/${GETTERMS_CMP_ID}/en-us?auto=true`}
           strategy="afterInteractive"
         />
+        <Script
+          id="ga-gtag-src"
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="ga-gtag-init" strategy="afterInteractive">
+          {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${GA_MEASUREMENT_ID}');`}
+        </Script>
       </body>
     </html>
   );
