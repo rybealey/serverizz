@@ -39,6 +39,15 @@ export function renderProse(html: string): { html: string; toc: TocItem[] } {
     .use(rehypeSlug)
     .use(() => (tree) => {
       visit(tree, "element", (node: Element) => {
+        // Inject noopener/noreferrer on external links before sanitization
+        if (node.tagName === "a") {
+          const href = node.properties?.href;
+          if (typeof href === "string" && /^https?:\/\//i.test(href)) {
+            node.properties = node.properties ?? {};
+            node.properties.target = "_blank";
+            node.properties.rel = ["noopener", "noreferrer"];
+          }
+        }
         if (node.tagName === "h2" || node.tagName === "h3") {
           const id = node.properties?.id;
           if (id) {

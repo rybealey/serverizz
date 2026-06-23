@@ -30,4 +30,15 @@ describe("renderProse", () => {
   it("returns empty html and empty toc for empty input", () => {
     expect(renderProse("")).toEqual({ html: "", toc: [] });
   });
+
+  it("adds rel=noopener noreferrer and target=_blank to external links", () => {
+    const { html } = renderProse('<a href="https://x.com">x</a>');
+    expect(html).toContain('rel="noopener noreferrer"');
+    expect(html).toContain('target="_blank"');
+  });
+
+  it("does not add target=_blank to relative/anchor links", () => {
+    const { html } = renderProse('<a href="#cost">c</a>');
+    expect(html).not.toContain('target="_blank"');
+  });
 });

@@ -7,7 +7,16 @@ export function articleMetadata(post: Post): Metadata {
   const path = `/blog/${post.slug}`;
   const description = post.excerpt.slice(0, 160);
   const meta = pageMetadata({ title: post.title, description, path });
-  const images = post.featuredImage ? [{ url: post.featuredImage.url }] : undefined;
+  const images = post.featuredImage
+    ? [
+        {
+          url: post.featuredImage.url,
+          ...(post.featuredImage.width ? { width: post.featuredImage.width } : {}),
+          ...(post.featuredImage.height ? { height: post.featuredImage.height } : {}),
+          ...(post.featuredImage.alt ? { alt: post.featuredImage.alt } : {}),
+        },
+      ]
+    : undefined;
   meta.openGraph = { ...meta.openGraph, type: "article", ...(images ? { images } : {}) };
   if (images) meta.twitter = { ...meta.twitter, images };
   return meta;
