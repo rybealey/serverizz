@@ -17,6 +17,7 @@ import {
   SITE_NAME,
   SITE_TAGLINE,
   SITE_URL,
+  localBusinessJsonLd,
 } from "@/lib/seo";
 
 const sora = Sora({
@@ -142,6 +143,11 @@ export default function RootLayout({
             inLanguage: "en-US",
             publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
           }}
+        />
+        <JsonLdScript
+          id="localbusiness-jsonld"
+          scriptKey="localbusiness-jsonld"
+          data={localBusinessJsonLd()}
         />
         {children}
         <AffiliateTracker />
