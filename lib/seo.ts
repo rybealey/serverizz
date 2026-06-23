@@ -156,6 +156,24 @@ export const PAGE_SEO: PageSeo[] = [
     priority: 0.7,
   },
   {
+    path: "/data-centers",
+    name: "Data Centers",
+    title: "Global Data Center Regions — Low-Latency Hosting",
+    description:
+      "Deploy across 32 data center regions on six continents — close to your team and your customers. Enterprise plans place workloads in the cities you choose, with localized peering and a redundant, multi-homed network.",
+    targetKeyword: "global data center regions",
+    cluster: [
+      "low-latency hosting",
+      "global infrastructure hosting",
+      "data center locations",
+      "enterprise hosting regions",
+    ],
+    jsonLd: "Service",
+    serviceType: "Global infrastructure",
+    changeFrequency: "monthly",
+    priority: 0.6,
+  },
+  {
     path: "/why",
     name: "Why SERVERIZZ",
     title: "Why SERVERIZZ",
