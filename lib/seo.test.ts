@@ -82,6 +82,12 @@ describe("serviceJsonLd", () => {
     expect((data.provider as Record<string, unknown>).name).toBeDefined();
     expect(data.areaServed).toEqual(expect.arrayContaining(["Latin America"]));
   });
+  it("builds a Service node for the data centers page", () => {
+    expect(seoFor("/data-centers").jsonLd).toBe("Service");
+    const data = serviceJsonLd("/data-centers");
+    expect(data["@type"]).toBe("Service");
+    expect(data.serviceType).toBe("Global infrastructure");
+  });
   it("throws for a non-Service page", () => {
     expect(() => serviceJsonLd("/why")).toThrow();
   });
