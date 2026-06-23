@@ -45,6 +45,18 @@ describe("getPosts", () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network")));
     await expect(getPosts()).rejects.toThrow();
   });
+
+  it("throws on HTTP error status (e.g. 500)", async () => {
+    vi.stubGlobal("fetch", mockJson([POST], {}, false));
+    await expect(getPosts()).rejects.toThrow();
+  });
+
+  it("omits the categories param when no categoryId is given", async () => {
+    const f = mockJson([POST], { "x-wp-totalpages": "1" });
+    vi.stubGlobal("fetch", f);
+    await getPosts({ perPage: 6 });
+    expect(String(f.mock.calls[0][0])).not.toContain("categories");
+  });
 });
 
 describe("getPost", () => {
