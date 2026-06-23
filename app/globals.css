@@ -181,6 +181,7 @@ a {
 .szz-term__line { font-size: 13px; line-height: 1.45; display: flex; gap: 6px; }
 .szz-term__line .p { color: var(--szz-green); font-weight: 500; flex: none; }
 .szz-term--command { color: var(--szz-accent-blue); font-weight: 500; }
+.szz-term--output { color: var(--szz-text-light); }
 .szz-term--success { color: var(--szz-green); font-weight: 500; }
 .szz-term--spinner { color: var(--szz-text-dim); }
 .szz-term--comment { color: var(--szz-text-faint); }

@@ -23,7 +23,7 @@ const COLUMNS: {
     heading: "COMPANY",
     links: [
       { label: "Why Us", href: "/why" },
-      { label: "About", href: "/support" },
+      { label: "About", href: "/about" },
       { label: "Blog", href: "/support" },
     ],
   },

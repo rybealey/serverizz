@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
  */
 export type TerminalLineType =
   | "command"
+  | "output"
   | "spinner"
   | "success"
   | "comment";

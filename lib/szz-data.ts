@@ -16,6 +16,14 @@ export const wpLines: TerminalLine[] = [
   { type: "comment", text: "log in at /wp-admin — we’ll keep it patched" },
 ];
 
+export const aboutLines: TerminalLine[] = [
+  { type: "command", text: "serverizz whoami" },
+  { type: "output", text: "Ry Bealey · founder, since 2014" },
+  { type: "output", text: "role: builds it, hosts it, answers the phone" },
+  { type: "success", text: "mission: keep small business online" },
+  { type: "comment", text: "started with one website — my mom’s" },
+];
+
 export const rsLines: TerminalLine[] = [
   { type: "command", text: "whm create-acct --domain clientsite.com --plan starter" },
   { type: "spinner", text: "Provisioning cPanel account…" },
