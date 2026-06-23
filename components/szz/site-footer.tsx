@@ -20,6 +20,12 @@ const COLUMNS: {
     ],
   },
   {
+    heading: "BUSINESS TOOLS",
+    links: [
+      { label: "AI Employees", href: "/ai-employees" },
+    ],
+  },
+  {
     heading: "COMPANY",
     links: [
       { label: "Why Us", href: "/why" },

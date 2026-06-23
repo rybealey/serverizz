@@ -24,6 +24,14 @@ export const aboutLines: TerminalLine[] = [
   { type: "comment", text: "started with one website — my mom’s" },
 ];
 
+export const aiTeamLines: TerminalLine[] = [
+  { type: "command", text: "serverizz hire --team marblism" },
+  { type: "spinner", text: "Onboarding your AI employees…" },
+  { type: "success", text: "Eva, Sonny, Stan, Penny, Rachel & Linda — clocked in" },
+  { type: "success", text: "SERVERIZZ perk applied: 10% off for life" },
+  { type: "comment", text: "they work nights. you don’t have to." },
+];
+
 export const rsLines: TerminalLine[] = [
   { type: "command", text: "whm create-acct --domain clientsite.com --plan starter" },
   { type: "spinner", text: "Provisioning cPanel account…" },
