@@ -30,7 +30,7 @@ const COLUMNS: {
     links: [
       { label: "Why Us", href: "/why" },
       { label: "About", href: "/about" },
-      { label: "Data Centers", href: "/data-centers" },
+      { label: "Regions", href: "/data-centers" },
       { label: "Newsroom", href: "/blog" },
     ],
   },
