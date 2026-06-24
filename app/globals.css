@@ -274,6 +274,16 @@ html[data-theme="light"] .szz-term {
 .szz-btn--destructive { --_bg: var(--signal-error-fill); --_fg: var(--szz-red); }
 .szz-btn--destructive:hover { --_bg: rgba(239, 68, 68, 0.18); }
 
+/* Light theme: secondary/ghost hardcode white text, which washes out on the
+   pale surfaces. Re-pin them to dark text on a defined light fill. */
+html[data-theme="light"] .szz-btn--secondary {
+  --_bg: var(--szz-bg-slate);
+  --_fg: var(--szz-text-primary);
+  --_bd: var(--szz-border);
+}
+html[data-theme="light"] .szz-btn--secondary:hover { --_bg: #d2d9e4; }
+html[data-theme="light"] .szz-btn--ghost:hover { --_fg: var(--szz-text-primary); }
+
 /* Card */
 .szz-card {
   display: flex;
