@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { BreadcrumbJsonLd } from "next-seo";
 import { HighlightSweep } from "@/components/szz/highlight-sweep";
+import { EmojiRain } from "@/components/szz/emoji-rain";
 import { breadcrumbTrail, pageMetadataFor } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadataFor("/offers/education");
@@ -197,6 +198,7 @@ export default function EducationOfferPage() {
       <BreadcrumbJsonLd
         items={breadcrumbTrail("Students & Educators — Back to School", PATH)}
       />
+      <EmojiRain />
 
       {/* hero */}
       <section style={{ background: cream }}>
