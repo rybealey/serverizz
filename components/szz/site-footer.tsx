@@ -79,6 +79,9 @@ export function SiteFooter() {
             <span style={{ fontSize: 13, color: "var(--szz-text-muted)" }}>
               howdy@serverizz.com
             </span>
+            <span style={{ fontSize: 13, color: "var(--szz-text-muted)" }}>
+              +1 (512) 859-7520
+            </span>
             <span style={{ fontSize: 13, lineHeight: 1.6, color: "var(--szz-text-dim)" }}>
               1606 Headway Circle, Suite 9317
               <br />

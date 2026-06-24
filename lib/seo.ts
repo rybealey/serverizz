@@ -31,6 +31,10 @@ export const ORG = {
   legalName: "Rizz Enterprises, LLC",
   email: "howdy@serverizz.com",
   supportEmail: "help@serverizz.com",
+  /** E.164 for tel: links and JSON-LD telephone fields. */
+  phone: "+15128597520",
+  /** Human-readable phone for display in the footer. */
+  phoneDisplay: "+1 (512) 859-7520",
   address: {
     streetAddress: "1606 Headway Circle, Suite 9317",
     addressLocality: "Austin",
@@ -339,6 +343,7 @@ export function localBusinessJsonLd(): Record<string, unknown> {
     legalName: ORG.legalName,
     url: SITE_URL,
     email: ORG.email,
+    telephone: ORG.phone,
     image: OG_IMAGE_URL,
     address: { "@type": "PostalAddress", ...ORG.address },
     areaServed: [...AREA_SERVED],

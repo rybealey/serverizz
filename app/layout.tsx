@@ -135,6 +135,7 @@ export default function RootLayout({
             "@type": "ContactPoint",
             contactType: "customer support",
             email: ORG.supportEmail,
+            telephone: ORG.phone,
           }}
         />
         <JsonLdScript
