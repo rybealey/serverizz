@@ -3,6 +3,7 @@ import {
   readingMinutes,
   formatDate,
   categoryColorVar,
+  decodeEntities,
   mapPostSummary,
   mapPost,
   mapCategory,
@@ -27,6 +28,23 @@ const RAW_POST: RawWpPost = {
 };
 
 const RAW_CATEGORY: RawWpCategory = { id: 3, slug: "small-business", name: "Small Business", count: 4, description: "Biz" };
+
+describe("decodeEntities", () => {
+  it("decodes named entities", () => {
+    expect(decodeEntities("News &amp; Updates")).toBe("News & Updates");
+    expect(decodeEntities("&ldquo;quoted&rdquo; &mdash; done")).toBe("“quoted” — done");
+    expect(decodeEntities("it&#039;s &amp; that&rsquo;s")).toBe("it's & that’s");
+  });
+  it("decodes numeric (decimal and hex) entities, including WP's &#038; ampersand", () => {
+    expect(decodeEntities("Domains &#038; Email")).toBe("Domains & Email");
+    expect(decodeEntities("caf&#233;")).toBe("café");
+    expect(decodeEntities("&#x27;hex&#x27;")).toBe("'hex'");
+  });
+  it("leaves unknown or malformed entities untouched", () => {
+    expect(decodeEntities("AT&T plain")).toBe("AT&T plain");
+    expect(decodeEntities("&notarealentity;")).toBe("&notarealentity;");
+  });
+});
 
 describe("readingMinutes", () => {
   it("computes ceil(words/200), min 1", () => {
@@ -76,6 +94,17 @@ describe("mapPostSummary", () => {
       featuredImage: { url: "https://newsroom.serverizz.com/f.jpg", alt: "cover", width: 1200, height: 630 },
     });
   });
+  it("decodes HTML entities in the category name", () => {
+    const withEntity: RawWpPost = {
+      ...RAW_POST,
+      _embedded: {
+        ...RAW_POST._embedded,
+        "wp:term": [[{ id: 9, slug: "news-and-updates", name: "News &amp; Updates", taxonomy: "category" }]],
+      },
+    };
+    expect(mapPostSummary(withEntity).category?.name).toBe("News & Updates");
+  });
+
   it("tolerates missing featured media and category", () => {
     const bare: RawWpPost = { ...RAW_POST, categories: [], _embedded: { author: RAW_POST._embedded!.author } };
     const p = mapPostSummary(bare);
@@ -90,6 +119,14 @@ describe("mapPost", () => {
     expect(p.author).toEqual({ name: "Ada", slug: "ada", description: "Founder", avatarUrl: "https://x/a.png" });
     expect(p.contentHtml).toContain('id="cost"');
     expect(p.toc).toEqual([{ id: "cost", label: "Cost", level: 2 }]);
+  });
+
+  it("decodes HTML entities in the author name", () => {
+    const withEntity: RawWpPost = {
+      ...RAW_POST,
+      _embedded: { ...RAW_POST._embedded, author: [{ name: "Ben &amp; Co.", slug: "ben", description: "", avatar_urls: {} }] },
+    };
+    expect(mapPost(withEntity).author?.name).toBe("Ben & Co.");
   });
 
   it("handles null author when _embedded has no author key", () => {
@@ -118,5 +155,10 @@ describe("mapCategory", () => {
     const catWithHtml: RawWpCategory = { id: 1, slug: "test", name: "Test", count: 2, description: "<p>Biz &amp; stuff</p>" };
     const mapped = mapCategory(catWithHtml);
     expect(mapped.description).toBe("Biz & stuff");
+  });
+
+  it("decodes HTML entities in the category name", () => {
+    const catWithEntity: RawWpCategory = { id: 1, slug: "news-and-updates", name: "News &amp; Updates", count: 2, description: "" };
+    expect(mapCategory(catWithEntity).name).toBe("News & Updates");
   });
 });

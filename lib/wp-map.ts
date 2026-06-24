@@ -46,9 +46,31 @@ export function categoryColorVar(slug: string): string {
   return `var(${CATEGORY_COLORS[slug] ?? DEFAULT_CATEGORY_COLOR})`;
 }
 
+// ---------- HTML entity decoding ----------
+// WordPress returns *.rendered text (titles, names, descriptions) HTML-encoded
+// — e.g. a category named "News & Updates" arrives as "News &amp; Updates".
+// These land in JSX text (React re-escapes on render), so decoding to real
+// characters here is safe and is what users expect to read.
+const NAMED_ENTITIES: Record<string, string> = {
+  amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " ",
+  hellip: "…", mdash: "—", ndash: "–", minus: "−",
+  lsquo: "‘", rsquo: "’", sbquo: "‚", ldquo: "“", rdquo: "”", bdquo: "„",
+  laquo: "«", raquo: "»", copy: "©", reg: "®", trade: "™", deg: "°",
+};
+
+export function decodeEntities(input: string): string {
+  return input.replace(/&(#x?[0-9a-f]+|[a-z][a-z0-9]*);/gi, (match, code: string) => {
+    if (code[0] === "#") {
+      const cp = code[1].toLowerCase() === "x" ? parseInt(code.slice(2), 16) : parseInt(code.slice(1), 10);
+      return Number.isFinite(cp) && cp > 0 ? String.fromCodePoint(cp) : match;
+    }
+    return NAMED_ENTITIES[code.toLowerCase()] ?? match;
+  });
+}
+
 // ---------- Derived fields WordPress doesn't provide ----------
 function stripHtml(html: string): string {
-  return html.replace(/<[^>]+>/g, " ").replace(/&amp;/g, "&").replace(/&#8217;/g, "'").replace(/&[a-z0-9#]+;/gi, " ").replace(/\s+/g, " ").trim();
+  return decodeEntities(html.replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim();
 }
 
 export function readingMinutes(html: string): number {
@@ -64,7 +86,7 @@ export function formatDate(iso: string): string {
 function embeddedCategory(raw: RawWpPost): PostCategory | null {
   const term = raw._embedded?.["wp:term"]?.flat().find((t) => t.taxonomy === "category");
   if (!term) return null;
-  return { id: term.id, slug: term.slug, name: term.name, colorVar: categoryColorVar(term.slug) };
+  return { id: term.id, slug: term.slug, name: decodeEntities(term.name), colorVar: categoryColorVar(term.slug) };
 }
 
 function embeddedImage(raw: RawWpPost): FeaturedImage | null {
@@ -93,11 +115,11 @@ export function mapPost(raw: RawWpPost): Post {
   const { html, toc } = renderProse(raw.content.rendered);
   const a = raw._embedded?.author?.[0];
   const author: Author | null = a
-    ? { name: a.name, slug: a.slug, description: a.description ?? "", avatarUrl: a.avatar_urls?.["96"] ?? null }
+    ? { name: decodeEntities(a.name), slug: a.slug, description: a.description ?? "", avatarUrl: a.avatar_urls?.["96"] ?? null }
     : null;
   return { ...summary, contentHtml: html, toc, author };
 }
 
 export function mapCategory(raw: RawWpCategory): Category {
-  return { id: raw.id, slug: raw.slug, name: raw.name, count: raw.count, description: stripHtml(raw.description), colorVar: categoryColorVar(raw.slug) };
+  return { id: raw.id, slug: raw.slug, name: decodeEntities(raw.name), count: raw.count, description: stripHtml(raw.description), colorVar: categoryColorVar(raw.slug) };
 }
