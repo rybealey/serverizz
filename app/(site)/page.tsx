@@ -12,6 +12,8 @@ import { getTldPricing } from "@/lib/clientexec";
 import { FEATURED_TLDS } from "@/lib/domains";
 import { DomainSearch } from "@/components/szz/domain-search";
 import { HeroMeshBackdrop } from "@/components/szz/hero-mesh";
+import { PostCard } from "@/components/szz/blog/post-card";
+import { getPosts } from "@/lib/wordpress";
 
 export const metadata: Metadata = pageMetadataFor("/");
 
@@ -51,6 +53,12 @@ const products = [
 
 export default async function HomePage() {
   const pricing = await getTldPricing(FEATURED_TLDS);
+
+  // 3 most recent blog posts for the homepage teaser. If the newsroom is
+  // unreachable we simply omit the section rather than break the homepage.
+  const recentPosts = await getPosts({ perPage: 3 })
+    .then((p) => p.posts)
+    .catch(() => []);
 
   const cheapest = pricing
     .filter((p) => p.formatedPrice !== null)
@@ -285,6 +293,33 @@ export default async function HomePage() {
           </Button>
         </div>
       </section>
+
+      {/* recent blog articles */}
+      {recentPosts.length > 0 && (
+        <section className="szz-section">
+          <div className="szz-container" style={{ display: "flex", flexDirection: "column", gap: 48 }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 14, textAlign: "center" }}>
+              <SectionEyebrow>Newsroom</SectionEyebrow>
+              <h2 style={{ margin: 0, fontFamily: display, fontSize: "clamp(28px, 5vw, 40px)", fontWeight: 700, lineHeight: 1.12, letterSpacing: "-1px", color: primary }}>
+                From the blog
+              </h2>
+              <p style={{ margin: 0, fontSize: 16, color: muted }}>
+                Guides, updates, and hosting know-how.
+              </p>
+            </div>
+            <div className="szz-grid-3 fill-cards">
+              {recentPosts.map((post) => (
+                <PostCard key={post.id} post={post} />
+              ))}
+            </div>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <Button asChild variant="outline" size="lg">
+                <Link href="/blog">Read the blog →</Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* final CTA */}
       <section
