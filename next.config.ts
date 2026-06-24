@@ -4,6 +4,8 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "newsroom.serverizz.com" },
+      // WordPress serves author avatars (avatar_urls) from Gravatar.
+      { protocol: "https", hostname: "secure.gravatar.com" },
     ],
   },
   async redirects() {
