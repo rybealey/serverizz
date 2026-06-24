@@ -31,7 +31,7 @@ const COLUMNS: {
       { label: "Why Us", href: "/why" },
       { label: "About", href: "/about" },
       { label: "Data Centers", href: "/data-centers" },
-      { label: "Blog", href: "/support" },
+      { label: "Newsroom", href: "/blog" },
     ],
   },
   {
