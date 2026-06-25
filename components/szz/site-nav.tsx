@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, Globe, LayoutTemplate, Menu, X, type LucideIcon } from "lucide-react";
@@ -275,7 +276,11 @@ function MobileNav({
 
   if (!open) return null;
 
-  return (
+  // Rendered through a portal to document.body: the sticky nav wrapper sets
+  // backdrop-filter, which makes it the containing block for fixed-position
+  // descendants — that would clamp this overlay to the nav's box instead of
+  // the viewport. Portaling escapes that ancestor entirely.
+  return createPortal(
     <div
       ref={overlayRef}
       id="mobile-nav"
@@ -490,7 +495,8 @@ function MobileNav({
         </Button>
         <ThemeToggle />
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
