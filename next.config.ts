@@ -42,8 +42,8 @@ const nextConfig: NextConfig = {
       // Company / about
       { source: "/about/contact", destination: "/support", permanent: true },
       { source: "/about/contributions", destination: "/about", permanent: true },
-      { source: "/about/serverizz-papers", destination: "/about", permanent: true },
-      { source: "/impact", destination: "/why", permanent: true },
+      { source: "/about/serverizz-papers", destination: "/blog", permanent: true },
+      { source: "/impact", destination: "/about", permanent: true },
 
       // Marketing "points" pages (specific first, then catch-all -> /blog)
       { source: "/points/wordpress", destination: "/hosting/wordpress", permanent: true },
