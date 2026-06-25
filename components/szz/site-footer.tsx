@@ -2,6 +2,7 @@ import * as React from "react";
 import Link from "next/link";
 import { TerminalLogo } from "@/components/szz/terminal-logo";
 import { PaymentMarks } from "@/components/szz/payment-marks";
+import { SocialLinks } from "@/components/szz/social-links";
 import { ImpactBadges } from "@/components/szz/impact-badges";
 import { LEGAL_DOCS } from "@/lib/legal";
 
@@ -107,6 +108,7 @@ export function SiteFooter() {
               Austin, TX 78754
             </span>
           </div>
+          <SocialLinks />
         </div>
 
         <div style={{ display: "flex", gap: 56, flexWrap: "wrap" }}>

@@ -434,6 +434,12 @@ html[data-theme="light"] .szz-btn--ghost:hover { --_fg: var(--szz-text-primary);
   transition: color var(--duration-fast) var(--ease-standard);
 }
 .szz-foot-link:hover { color: var(--szz-text-primary); }
+.szz-social-link {
+  display: inline-flex;
+  color: var(--szz-text-dim);
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+.szz-social-link:hover { color: var(--szz-accent-blue); }
 .szz-link-accent {
   background: none;
   border: none;
