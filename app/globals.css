@@ -75,6 +75,7 @@
 
   --shadow-glow-blue: 0 8px 40px rgba(96, 165, 250, 0.08);
   --shadow-popular: 0 4px 24px 2px rgba(37, 99, 235, 0.19);
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.05), 0 12px 28px -8px rgba(15, 23, 42, 0.12);
 
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
   --duration-fast: 0.15s;
@@ -378,6 +379,34 @@ html[data-theme="light"] .szz-btn--ghost:hover { --_fg: var(--szz-text-primary);
   .szz-section--lg { padding: 64px 18px; }
   .szz-grid-2, .szz-grid-3, .szz-grid-4,
   .szz-split, .szz-hero-grid, .szz-form-grid { grid-template-columns: 1fr; }
+}
+
+/* ---------- Blog featured card (image beside text → stacked on mobile) ---------- */
+.szz-blog-featured {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  border: 1px solid var(--szz-border);
+  border-radius: 16px;
+  background: var(--szz-bg-card);
+  overflow: hidden;
+  /* Lift the featured card off the page so the stacked content reads as a card, not loose text */
+  box-shadow: var(--shadow-card);
+}
+.szz-blog-featured__img { width: 100%; height: 100%; min-height: 280px; object-fit: cover; }
+.szz-blog-featured__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 36px;
+  justify-content: center;
+  min-width: 0;
+}
+@media (max-width: 720px) {
+  .szz-blog-featured { grid-template-columns: 1fr; }
+  /* Image becomes a full-width banner with a sane aspect ratio instead of a squished half-column. */
+  .szz-blog-featured__img { height: auto; min-height: 0; aspect-ratio: 16 / 9; }
+  .szz-blog-featured__body { padding: 24px; gap: 12px; }
+  .szz-blog-featured__title { font-size: 24px !important; }
 }
 
 /* Nav + footer link hovers (muted → primary) */
